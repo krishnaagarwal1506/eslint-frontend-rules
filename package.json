@@ -1,0 +1,26 @@
+{
+  "name": "eslint-frontend-rules",
+  "version": "1.0.0",
+  "description": "Reusable ESLint plugin for frontend projects: enforces Typography components and prevents direct color values.",
+  "main": "lib/index.js",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "frontend",
+    "typography",
+    "color",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "micromatch": "^4.0.8"
+  },
+  "peerDependencies": {
+    "eslint": ">=7.0.0"
+  },
+  "files": [
+    "lib"
+  ]
+}
