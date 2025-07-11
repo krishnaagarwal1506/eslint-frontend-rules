@@ -14,8 +14,12 @@ Add `eslint-frontend-rules` to your ESLint config:
 
 ```json
 {
-  "plugins": ["eslint-frontend-rules"],
-  "extends": ["plugin:eslint-frontend-rules/recommended"],
+  "extends": [
+      frontendRules.configs.recommended,
+    ],
+  "plugins": {
+      "eslint-frontend-rules": frontendRules,
+    },
   "rules": {
     // Optionally override rule levels or options here
   }
@@ -88,10 +92,22 @@ Add `eslint-frontend-rules` to your ESLint config:
 ```json
 {
   "rules": {
-    "eslint-frontend-rules/enforce-typography-components": ["error", { "ignore": ["**/legacy/**/*.tsx"] }],
-    "eslint-frontend-rules/no-direct-colors": ["error", { "ignore": ["**/test-utils/**"] }],
-    "eslint-frontend-rules/enforce-kebab-case-filenames": ["error", { "extensions": [".js", ".ts", ".json"] }],
-    "eslint-frontend-rules/no-inline-arrow-functions-in-jsx": ["warn", { "ignore": ["**/storybook/**"] }]
+    "eslint-frontend-rules/enforce-typography-components": [
+      "error",
+      { "ignore": ["**/legacy/**/*.tsx"] }
+    ],
+    "eslint-frontend-rules/no-direct-colors": [
+      "error",
+      { "ignore": ["**/test-utils/**"] }
+    ],
+    "eslint-frontend-rules/enforce-kebab-case-filenames": [
+      "error",
+      { "extensions": [".js", ".ts", ".json"] }
+    ],
+    "eslint-frontend-rules/no-inline-arrow-functions-in-jsx": [
+      "warn",
+      { "ignore": ["**/storybook/**"] }
+    ]
   }
 }
 ```
