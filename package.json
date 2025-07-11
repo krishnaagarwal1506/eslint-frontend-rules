@@ -12,7 +12,7 @@
     "color",
     "react"
   ],
-  "author": "",
+  "author": "Krishna Agarwal <krishnaagarwal.dev@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "micromatch": "^4.0.8"
@@ -22,5 +22,13 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krishnaagarwal1506/eslint-frontend-rules.git"
+  },
+  "bugs": {
+    "url": "https://github.com/krishnaagarwal1506/eslint-frontend-rules/issues"
+  },
+  "homepage": "https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme"
 }
