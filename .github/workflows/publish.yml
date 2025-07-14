@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - main-for-legacy-projects
 
 jobs:
   publish:
