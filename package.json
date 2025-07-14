@@ -1,6 +1,6 @@
 {
   "name": "eslint-frontend-rules",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Reusable ESLint plugin for frontend projects: enforces consistent naming, design, and code quality rules for React and TypeScript, including Typography components, color usage, file naming, export style, and more.",
   "main": "lib/index.js",
   "keywords": [
