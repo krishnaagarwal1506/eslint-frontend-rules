@@ -26,6 +26,31 @@ Add `eslint-frontend-rules` to your ESLint config:
 }
 ```
 
+## Usage with .eslintrc.cjs
+
+For projects using `.eslintrc.cjs` (CommonJS), add the plugin and recommended config as follows:
+
+```js
+// .eslintrc.cjs
+module.exports = {
+  plugins: ["frontend-rules"],
+  extends: [
+    // ...other configs...
+    "plugin:frontend-rules/recommended",
+  ],
+  rules: {
+    // Optionally override rule levels or options here
+  },
+};
+```
+
+- Install the plugin:
+  ```sh
+  npm install --save-dev eslint-plugin-frontend-rules
+  ```
+- Use `'frontend-rules'` in `plugins` and `'plugin:frontend-rules/recommended'` in `extends`.
+- All rules will be enabled by default; you can override or configure them in the `rules` section.
+
 ## Included Rules
 
 ### 1. enforce-typography-components
