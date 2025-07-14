@@ -112,6 +112,20 @@ rules: {
 }
 ```
 
+### 10. no-nested-component
+
+**Disallows defining a new component inside another component.**
+
+- Prevents declaring a React component (function or class) inside the body of another component.
+- All components should be defined at the top level of the file for performance and maintainability.
+- Error: Do not define a new component inside another component. Move it to the top level of the file.
+- Options: `ignore` (array of glob patterns)
+
+**Why?**
+
+- Inner components are recreated on every render, breaking memoization and harming performance.
+- Encourages clear, maintainable code structure.
+
 ## Example: Custom Rule Options
 
 ```json
