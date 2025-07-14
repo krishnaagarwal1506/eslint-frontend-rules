@@ -87,6 +87,31 @@ Add `eslint-frontend-rules` to your ESLint config:
 
 - Options: `ignore` (array of glob patterns)
 
+### 9. enforce-alias-import-paths
+
+**Enforces the use of alias import paths instead of relative paths (e.g., '@/components/Button' instead of '../../components/Button').**
+
+- Helps maintain consistent and readable import statements by requiring configured alias prefixes.
+- Default allowed alias: `@`. You can configure more aliases in your ESLint config.
+- Options:
+  - `aliases`: Array of allowed alias prefixes for import paths (e.g., `['@', '@components', '@utils']`).
+  - `ignore`: Array of glob patterns to ignore files or import paths.
+
+**Example configuration:**
+
+```js
+// .eslintrc.js
+rules: {
+  'eslint-frontend-rules/enforce-alias-import-paths': [
+    'error',
+    {
+      aliases: ['@', '@components', '@utils'],
+      ignore: ['**/*.test.tsx']
+    }
+  ]
+}
+```
+
 ## Example: Custom Rule Options
 
 ```json
@@ -107,6 +132,13 @@ Add `eslint-frontend-rules` to your ESLint config:
     "eslint-frontend-rules/no-inline-arrow-functions-in-jsx": [
       "warn",
       { "ignore": ["**/storybook/**"] }
+    ],
+    "eslint-frontend-rules/enforce-alias-import-paths": [
+      "error",
+      {
+        "aliases": ["@"],
+        "ignore": ["**/node_modules/**"]
+      }
     ]
   }
 }
