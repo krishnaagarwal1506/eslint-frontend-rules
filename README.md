@@ -126,6 +126,46 @@ rules: {
 - Inner components are recreated on every render, breaking memoization and harming performance.
 - Encourages clear, maintainable code structure.
 
+### 11. no-unnecessary-fragment
+
+**Warns if React fragments (`<>...</>`, `<React.Fragment>...</React.Fragment>`, or `<Fragment>...</Fragment>`) are unnecessary.**
+
+- Warns when a fragment wraps only a single child or is not needed for grouping.
+- Supports both short syntax (`<>...</>`) and named fragments (`<React.Fragment>`, `<Fragment>`).
+- Helps keep JSX clean and readable by removing redundant fragments.
+- No options.
+
+**Example:**
+
+```jsx
+// Warns:
+return (
+  <>
+    <div />
+  </>
+);
+
+return (
+  <Fragment>
+    <div />
+  </Fragment>
+);
+
+return (
+  <React.Fragment>
+    <div />
+  </React.Fragment>
+);
+
+// OK:
+return (
+  <>
+    <div />
+    <span />
+  </>
+);
+```
+
 ## Example: Custom Rule Options
 
 ```json
