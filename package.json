@@ -2,7 +2,7 @@
   "name": "eslint-frontend-rules",
   "version": "1.0.6",
   "description": "Reusable ESLint plugin for frontend projects: enforces consistent naming, design, and code quality rules for React and TypeScript, including Typography components, color usage, file naming, export style, and more.",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "keywords": [
     "eslint",
     "eslintplugin",
@@ -21,7 +21,7 @@
     "eslint": ">=7.0.0"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -30,5 +30,14 @@
   "bugs": {
     "url": "https://github.com/krishnaagarwal1506/eslint-frontend-rules/issues"
   },
-  "homepage": "https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme"
+  "homepage": "https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.45.1"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
+  }
 }
