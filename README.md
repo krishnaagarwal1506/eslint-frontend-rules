@@ -219,6 +219,86 @@ function useCustomHook() {
 }
 ```
 
+### 13. require-jsdoc-on-component
+
+**Warns if a root-level React component lacks a JSDoc comment.**
+
+- Only applies to root-level functions that are React components (name starts with uppercase letter).
+- Supports folder restriction via options (e.g., only in `components/`).
+- Error: Root-level React component "MyComponent" should have a JSDoc comment.
+- Options:
+  - `folders`: Array of glob patterns to restrict rule to certain folders/files.
+
+**Example configuration:**
+
+```js
+rules: {
+  'eslint-frontend-rules/require-jsdoc-on-component': [
+    'warn',
+    { folders: ['src/components/**'] }
+  ]
+}
+```
+
+**Example:**
+
+```js
+// Warns:
+function MyComponent() {
+  return <div />;
+}
+
+const Button = () => <button />;
+
+// OK (has JSDoc):
+/**
+ * My button component.
+ */
+function Button() {
+  return <button />;
+}
+```
+
+### 14. require-jsdoc-on-hook
+
+**Warns if a root-level React hook lacks a JSDoc comment.**
+
+- Only applies to root-level functions that are hooks (name starts with `use` followed by uppercase letter or digit).
+- Supports folder restriction via options (e.g., only in `hooks/`).
+- Error: Root-level React hook "useCustom" should have a JSDoc comment.
+- Options:
+  - `folders`: Array of glob patterns to restrict rule to certain folders/files.
+
+**Example configuration:**
+
+```js
+rules: {
+  'eslint-frontend-rules/require-jsdoc-on-hook': [
+    'warn',
+    { folders: ['src/hooks/**'] }
+  ]
+}
+```
+
+**Example:**
+
+```js
+// Warns:
+function useCustom() {
+  // ...
+}
+
+const useSomething = () => { /* ... */ };
+
+// OK (has JSDoc):
+/**
+ * Custom hook for ...
+ */
+function useCustom() {
+  // ...
+}
+```
+
 ## Example: Custom Rule Options
 
 ```json
