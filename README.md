@@ -166,6 +166,59 @@ return (
 );
 ```
 
+### 12. require-jsdoc-on-root-function
+
+**Warns if a root-level function (not a React component or hook) lacks a JSDoc comment.**
+
+- Only applies to root-level functions (not inside a component/class).
+- Skips React components (names starting with uppercase) and hooks (names starting with `use`).
+- Supports folder restriction via options (e.g., only in `utils/`).
+- Error: Root-level function "myFunction" should have a JSDoc comment.
+- Options:
+  - `folders`: Array of glob patterns to restrict rule to certain folders/files.
+
+**Example configuration:**
+
+```js
+rules: {
+  'eslint-frontend-rules/require-jsdoc-on-root-function': [
+    'warn',
+    { folders: ['src/utils/**'] }
+  ]
+}
+```
+
+**Example:**
+
+```js
+// Warns:
+function myUtil() {
+  /* ... */
+}
+
+const doSomething = () => {
+  /* ... */
+};
+
+// OK (has JSDoc):
+/**
+ * Adds two numbers.
+ */
+function add(a, b) {
+  return a + b;
+}
+
+// OK (component):
+function MyComponent() {
+  return <div />;
+}
+
+// OK (hook):
+function useCustomHook() {
+  /* ... */
+}
+```
+
 ## Example: Custom Rule Options
 
 ```json
