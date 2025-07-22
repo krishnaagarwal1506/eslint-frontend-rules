@@ -318,6 +318,41 @@ function useCustom() {
 // OK:
 <Component name="xyz" />
 <Component name={someVar} />
+<Component name="" /> // allowed by default
+```
+
+### 16. enforce-classname-utility
+
+**Warns if the `className` prop in JSX is set to a template string (e.g., `` className={`foo ${bar}`} ``) instead of using a function or library (like `cn`).**
+
+- Example: `<Component className={\`foo ${bar}\`} />`(should use`cn` or a similar utility)
+- Allows plain string literals (e.g., `className="foo bar"`) and empty string by default.
+- Options:
+  - `allow`: Array of allowed string literal values for className (default: `[""]`).
+
+**Example configuration:**
+
+```js
+rules: {
+  'eslint-frontend-rules/enforce-classname-utility': [
+    'warn',
+    { allow: [""] }
+  ]
+}
+```
+
+**Example:**
+
+```jsx
+// Warns:
+<Component className={`foo ${bar}`} />
+<Component className={`btn ${isActive ? 'active' : ''}`} />
+
+// OK:
+<Component className={cn('foo', { active })} />
+<Component className={someVar} />
+<Component className="foo bar" />
+<Component className="" /> // allowed by default
 ```
 
 ## Example: Custom Rule Options
