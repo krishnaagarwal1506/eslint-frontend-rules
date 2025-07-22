@@ -288,7 +288,9 @@ function useCustom() {
   // ...
 }
 
-const useSomething = () => { /* ... */ };
+const useSomething = () => {
+  /* ... */
+};
 
 // OK (has JSDoc):
 /**
@@ -297,6 +299,25 @@ const useSomething = () => { /* ... */ };
 function useCustom() {
   // ...
 }
+```
+
+### 15. no-unnecessary-curly-in-props
+
+**Warns if JSX props use unnecessary curly braces for string literals.**
+
+- Example: `<Component name={'xyz'} />` (should be `<Component name="xyz" />`)
+- Auto-fixable: will convert `{'xyz'}` to `"xyz"` in props.
+- No options.
+
+**Example:**
+
+```jsx
+// Warns and auto-fixes:
+<Component name={'xyz'} />
+
+// OK:
+<Component name="xyz" />
+<Component name={someVar} />
 ```
 
 ## Example: Custom Rule Options
