@@ -51,6 +51,7 @@ Add `eslint-frontend-rules` to your ESLint config:
 
 - Functions are ignored.
 - Options: `ignore` (array of glob patterns)
+- test
 
 ### 4. no-focusable-non-interactive-elements
 
