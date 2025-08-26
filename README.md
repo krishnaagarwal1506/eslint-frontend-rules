@@ -353,6 +353,32 @@ rules: {
 <Component className={someVar} />
 <Component className="foo bar" />
 <Component className="" /> // allowed by default
+
+```
+### 17. no-empty-classname
+
+**Disallows empty or whitespace-only `className` attributes in JSX.**
+
+- Flags cases where `className` is set but contains no usable value.
+- Helps keep code clean by avoiding unnecessary `className=""`, `className="   "`, or `className={""}`.
+- Works with string literals, expression containers, and template literals.
+- No options.
+
+**Error:** Empty className string found. Remove it or add valid classes.
+
+**Example:**
+
+```jsx
+// ❌ Warns:
+<div className="" />
+<div className="   " />
+<div className={""} />
+<div className={`   `} />
+
+// ✅ OK:
+<div className="btn primary" />
+<div className={isActive ? "btn-active" : "btn"} />
+<div />
 ```
 
 ## Example: Custom Rule Options
