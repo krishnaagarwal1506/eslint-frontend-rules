@@ -502,6 +502,132 @@ rules: {
 <div />
 ```
 
+### 18. no-img-missing-alt
+
+**Requires an `alt` attribute on raw `<img>` elements.**
+
+- Only flags a *missing* `alt` attribute — never an empty one. `alt=""` is
+  valid and intentional for purely decorative images, so this rule never
+  pressures anyone into writing meaningless alt text.
+- Skips images marked `aria-hidden="true"` (already hidden from assistive
+  tech) and images using spread props (`<img {...imgProps} />` — the `alt`
+  may already be included, can't know statically).
+- No autofix (a meaningful description requires human judgment).
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+<img src="cat.png" />
+
+// OK:
+<img src="cat.png" alt="A cat asleep on a windowsill" />
+<img src="divider.png" alt="" />
+<img src="cat.png" aria-hidden="true" />
+```
+
+### 19. enforce-icon-button-aria-label
+
+**Requires an accessible name (`aria-label`, `aria-labelledby`, or `title`) on a `<button>` whose only content is an icon.**
+
+- A button with visible text content (`<button><X/>Close</button>`) is never
+  flagged — the text already provides an accessible name.
+- A button whose only child is a dynamic expression (`{label}`) is not
+  flagged either — it might render text at runtime; can't know statically.
+- No autofix (the right label is a human judgment call).
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+<button onClick={onClose}><X size={16} /></button>
+
+// OK:
+<button aria-label="Close" onClick={onClose}><X size={16} /></button>
+<button onClick={onClose}><X size={16} />Close</button>
+```
+
+### 20. no-direct-colors-in-svg-attrs
+
+**Prevents direct color values in SVG presentation attributes (`fill`, `stroke`, `stopColor`, and their flood/lighting-color equivalents).**
+
+- Companion to `no-direct-colors`, which only checks `style`/`className` —
+  this covers the SVG-specific attributes that rule doesn't reach.
+- Keyword values (`currentColor`, `none`, `transparent`, `inherit`) are never
+  flagged — they reference context, not a literal color.
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+<circle fill="#4285F4" />
+<line stroke="rgb(0,0,0)" />
+
+// OK:
+<circle fill="var(--accent)" />
+<path fill="currentColor" />
+```
+
+### 21. enforce-css-module-import-name
+
+**Enforces one consistent local name for CSS Module default imports (default: `styles`).**
+
+- Only checks default/namespace imports from a `*.module.{css,scss,sass,less}`
+  file — not named imports (some setups also export a member per class name;
+  those aren't a single "module object" to standardize a name for).
+- **Autofixable**, and safely so: unlike a named import specifier (where the
+  identifier *is* the external export's name), a default import's local name
+  is a free local alias — renaming it, and every reference to it, never
+  changes what's actually imported.
+- Options:
+  - `expectedName` (default `"styles"`)
+  - `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns and auto-fixes (renames the import AND every usage):
+import css from './card.module.css'
+function Card() { return <div className={css.root} /> }
+
+// OK:
+import styles from './card.module.css'
+function Card() { return <div className={styles.root} /> }
+```
+
+### 22. no-unstable-default-props
+
+**Disallows object/array/function literal default values in a component or hook's destructured parameters.**
+
+- `function Card({ items = [] }) {}` creates a *new* array every call — if
+  `items` is ever passed to a memoized child, an effect dependency array, or
+  compared by reference anywhere downstream, that comparison silently fails
+  every time, defeating the memoization.
+- Scoped to components (PascalCase name) and hooks (`use*` name) — not every
+  function — since that's specifically where props/dependency-array
+  reference comparisons matter.
+- Also checks a default on the *whole* destructured parameter
+  (`{ a = 1 } = {}`), not just on individual properties.
+- No autofix (hoisting to a well-named module-level constant is a judgment
+  call: name, placement, and whether it should be shared).
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+function Card({ items = [] }) { /* ... */ }
+function useThing({ options = {} } = {}) { /* ... */ }
+
+// OK:
+const EMPTY_ITEMS = [];
+function Card({ items = EMPTY_ITEMS }) { /* ... */ }
+function Card({ count = 0, label = 'untitled' }) { /* ... */ } // primitives are always fine
+```
+
 ## Example: Custom Rule Options
 
 ```json
