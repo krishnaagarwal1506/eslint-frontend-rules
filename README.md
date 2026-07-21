@@ -46,8 +46,13 @@ every Next.js page) or require setup most projects don't have yet
   producing `react/jsx-no-duplicate-props`; and it string-sliced the
   `onClick` handler's source assuming it was `{identifier}`, breaking anything
   else (e.g. an inline arrow) into an invalid statement. Now checks for *any*
-  existing `role`, and wraps the original handler expression in parens
-  (`(EXPR)(e)`) instead of guessing its shape.
+  existing `role`. The generated `onKeyDown` also no longer re-invokes the
+  onClick expression directly (an intermediate fix that called it as `(e)`
+  unconditionally was itself a `TS2554` type error for any handler typed with
+  zero parameters — caught by running this against a real ~400-file
+  TypeScript codebase, not just synthetic snippets) — it now triggers
+  `e.currentTarget.click()`, letting React's own event system re-invoke the
+  actual onClick prop with no arity assumptions at all.
 - `no-unnecessary-fragment`: unwrapping `<>{child}</>` to bare `child` is only
   valid when the fragment sits in direct JSX-children position. A fragment as
   a `{cond && <>...</>}` operand (or similar) produced a parse error when
