@@ -4,7 +4,67 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>eslint-frontend-rules — an ESLint plugin for frontend teams</title>
-<meta name="description" content="An ESLint plugin that catches frontend inconsistencies: raw HTML instead of Typography components, hardcoded colors, unstable default props, missing alt text, and 24 more.">
+<meta name="description" content="An ESLint plugin that catches frontend inconsistencies: raw HTML instead of Typography components, hardcoded colors, unstable default props, missing alt text, and 24 more. 28 rules for React and TypeScript codebases, six with autofix.">
+<meta name="keywords" content="eslint, eslint plugin, eslintplugin, eslint-plugin, react, typescript, frontend, jsx, accessibility, a11y, linting, code quality, typography component, design tokens, code review">
+<meta name="author" content="Krishna Agarwal">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="googlebot" content="index, follow">
+<link rel="canonical" href="https://krishnaagarwal1506.github.io/eslint-frontend-rules/">
+<link rel="author" href="https://krishnaagarwal.me">
+<meta name="theme-color" content="#EDEEE6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151915" media="(prefers-color-scheme: dark)">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="eslint-frontend-rules">
+<meta property="og:title" content="eslint-frontend-rules — stop leaving the same PR comment twice">
+<meta property="og:description" content="An ESLint plugin that catches frontend inconsistencies — raw HTML instead of Typography components, hardcoded colors, unstable default props, missing alt text, and 24 more. 28 rules, six with autofix.">
+<meta property="og:url" content="https://krishnaagarwal1506.github.io/eslint-frontend-rules/">
+<meta property="og:image" content="https://krishnaagarwal1506.github.io/eslint-frontend-rules/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="eslint-frontend-rules: an ESLint plugin for React and TypeScript teams — 28 rules, six with autofix.">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="eslint-frontend-rules — stop leaving the same PR comment twice">
+<meta name="twitter:description" content="An ESLint plugin that catches frontend inconsistencies — raw HTML instead of Typography components, hardcoded colors, unstable default props, missing alt text, and 24 more.">
+<meta name="twitter:image" content="https://krishnaagarwal1506.github.io/eslint-frontend-rules/og-image.png">
+<meta name="twitter:image:alt" content="eslint-frontend-rules: an ESLint plugin for React and TypeScript teams — 28 rules, six with autofix.">
+
+<!-- Favicons -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "eslint-frontend-rules",
+      "description": "An ESLint plugin that enforces consistent naming, design, and code quality rules for React and TypeScript frontend codebases: Typography components, color tokens, accessibility, naming conventions, and more.",
+      "codeRepository": "https://github.com/krishnaagarwal1506/eslint-frontend-rules",
+      "programmingLanguage": "JavaScript",
+      "runtimePlatform": "Node.js",
+      "license": "https://opensource.org/licenses/MIT",
+      "softwareVersion": "4.1.0",
+      "downloadUrl": "https://www.npmjs.com/package/eslint-frontend-rules",
+      "author": { "@type": "Person", "name": "Krishna Agarwal", "url": "https://krishnaagarwal.me" },
+      "keywords": "eslint, eslint-plugin, react, typescript, frontend, accessibility, linting"
+    },
+    {
+      "@type": "WebSite",
+      "name": "eslint-frontend-rules",
+      "url": "https://krishnaagarwal1506.github.io/eslint-frontend-rules/"
+    }
+  ]
+}
+</script>
 <style>
   :root {
     --paper: #EDEEE6;
@@ -133,12 +193,30 @@
   .nav-links a { color: var(--ink-soft); text-decoration: none; }
   .nav-links a:hover { color: var(--accent); }
   @media (min-width: 760px) { .nav-links { display: flex; } }
+  .header-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
   .version-pill {
     font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.02em;
     background: var(--paper-sunken); color: var(--ink-soft);
     padding: 3px 9px; border-radius: 20px; border: 1px solid var(--rule);
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
+  .star-btn {
+    display: inline-flex; align-items: stretch; text-decoration: none;
+    font-family: var(--font-mono); font-size: 0.78rem; border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--rule);
+  }
+  .star-btn-main {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--paper-raised); color: var(--ink); padding: 4px 9px;
+  }
+  .star-btn-count {
+    display: inline-flex; align-items: center;
+    background: var(--paper-sunken); color: var(--ink-soft); padding: 4px 9px;
+    border-left: 1px solid var(--rule); font-variant-numeric: tabular-nums;
+  }
+  .star-btn:hover .star-btn-main { color: var(--accent); }
+  .star-btn:hover { border-color: var(--accent); }
 
   /* ---------- hero ---------- */
   .hero { padding: 64px 0 40px; }
@@ -360,9 +438,17 @@
       <a href="#demo">See it work</a>
       <a href="#quickstart">Install</a>
       <a href="#rules">Rules</a>
-      <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules">GitHub</a>
     </nav>
-    <span class="version-pill">v4.1.0</span>
+    <div class="header-meta">
+      <span class="version-pill" id="version-pill">v4.1.0</span>
+      <a class="star-btn" id="star-btn" href="https://github.com/krishnaagarwal1506/eslint-frontend-rules" target="_blank" rel="noopener" aria-label="Star eslint-frontend-rules on GitHub">
+        <span class="star-btn-main">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.79L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+          Star
+        </span>
+        <span class="star-btn-count" id="star-count">&mdash;</span>
+      </a>
+    </div>
   </div>
 </header>
 
@@ -381,6 +467,9 @@
           <span><span class="prompt">$</span> npm install --save-dev eslint-frontend-rules</span>
           <button class="copy" type="button" data-copy="npm install --save-dev eslint-frontend-rules">Copy</button>
         </div>
+        <a class="ghost-link" href="https://www.npmjs.com/package/eslint-frontend-rules">
+          View on npm &#8594;
+        </a>
         <a class="ghost-link" href="https://github.com/krishnaagarwal1506/eslint-frontend-rules">
           View source on GitHub &#8594;
         </a>
@@ -389,7 +478,8 @@
         <div class="stat"><b>28</b><span>lint rules</span></div>
         <div class="stat"><b>9</b><span>categories covered</span></div>
         <div class="stat"><b>6</b><span>ship with autofix</span></div>
-        <div class="stat"><b>0</b><span>runtime dependencies*</span></div>
+        <div class="stat"><b id="stat-downloads">&mdash;</b><span>npm downloads / mo</span></div>
+        <div class="stat"><b id="stat-stars">&mdash;</b><span>GitHub stars</span></div>
       </div>
     </div>
   </section>
@@ -567,8 +657,56 @@
         <p class="section-desc">Every rule accepts an <code>ignore</code> option (glob patterns) to exempt files; several take their own additional options &mdash; see the README for the full list.</p>
       </div>
       <input class="rule-search" id="rule-search" type="search" placeholder="Search rules&hellip;" aria-label="Search rules">
-      <div class="filter-bar" id="filter-bar" role="group" aria-label="Filter by category"></div>
-      <ul class="rule-list" id="rule-list"></ul>
+      <div class="filter-bar" id="filter-bar" role="group" aria-label="Filter by category">
+        <button type="button" data-cat="all" class="is-active">All (28)</button>
+        <button type="button" data-cat="design">Design &amp; Color (3)</button>
+        <button type="button" data-cat="accessibility">Accessibility (3)</button>
+        <button type="button" data-cat="react">React Patterns (9)</button>
+        <button type="button" data-cat="naming">Naming (4)</button>
+        <button type="button" data-cat="typescript">TypeScript (2)</button>
+        <button type="button" data-cat="import-export">Imports &amp; Exports (2)</button>
+        <button type="button" data-cat="file-structure">File Structure (1)</button>
+        <button type="button" data-cat="documentation">Documentation (3)</button>
+        <button type="button" data-cat="testing">Testing (1)</button>
+      </div>
+      <ul class="rule-list" id="rule-list">
+        <li class="rule-row" data-cat="design"><span class="rname">enforce-typography-components</span><span class="rdesc">Enforces Typography components over raw &lt;p&gt;, &lt;span&gt;, &lt;h1&gt;&ndash;&lt;h6&gt;, &lt;blockquote&gt; tags.</span><span class="rmeta"><span class="cat-chip">Design &amp; Color</span></span></li>
+        <li class="rule-row" data-cat="design"><span class="rname">no-direct-colors</span><span class="rdesc">Disallows hex, rgb(a), hsl(a), and named colors in style props and classNames.</span><span class="rmeta"><span class="cat-chip">Design &amp; Color</span></span></li>
+        <li class="rule-row" data-cat="design"><span class="rname">no-direct-colors-in-svg-attrs</span><span class="rdesc">Extends the color rule to SVG fill, stroke, stopColor, and flood/lighting-color attributes.</span><span class="rmeta"><span class="cat-chip">Design &amp; Color</span></span></li>
+
+        <li class="rule-row" data-cat="accessibility"><span class="rname">enforce-icon-button-aria-label</span><span class="rdesc">Requires an accessible name (aria-label, aria-labelledby, or title) on icon-only buttons.</span><span class="rmeta"><span class="cat-chip">Accessibility</span></span></li>
+        <li class="rule-row" data-cat="accessibility"><span class="rname">no-focusable-non-interactive-elements</span><span class="rdesc">Flags non-interactive elements with onClick but no role or onKeyDown.</span><span class="rmeta"><span class="cat-chip">Accessibility</span></span></li>
+        <li class="rule-row" data-cat="accessibility"><span class="rname">no-img-missing-alt</span><span class="rdesc">Requires an alt attribute on raw &lt;img&gt; elements &mdash; empty alt is fine, missing isn't.</span><span class="rmeta"><span class="cat-chip">Accessibility</span></span></li>
+
+        <li class="rule-row" data-cat="react"><span class="rname">enforce-classname-utility</span><span class="rdesc">Warns when className is built from a template string instead of a class-merging utility like cn.</span><span class="rmeta"><span class="cat-chip">React Patterns</span></span></li>
+        <li class="rule-row" data-cat="react" data-fix="true"><span class="rname">enforce-event-handler-naming</span><span class="rdesc">Requires on* prop names and handle* local function names for event handlers.</span><span class="rmeta"><span class="cat-chip">React Patterns</span><span class="fix-chip">Autofix</span></span></li>
+        <li class="rule-row" data-cat="react"><span class="rname">enforce-no-empty-classname-utility</span><span class="rdesc">Disallows empty or whitespace-only className attributes.</span><span class="rmeta"><span class="cat-chip">React Patterns</span></span></li>
+        <li class="rule-row" data-cat="react" data-fix="true"><span class="rname">enforce-use-state-naming</span><span class="rdesc">Requires the [value, setValue] naming convention for useState destructuring.</span><span class="rmeta"><span class="cat-chip">React Patterns</span><span class="fix-chip">Autofix</span></span></li>
+        <li class="rule-row" data-cat="react"><span class="rname">no-inline-arrow-functions-in-jsx</span><span class="rdesc">Warns on inline arrow functions passed as JSX props.</span><span class="rmeta"><span class="cat-chip">React Patterns</span></span></li>
+        <li class="rule-row" data-cat="react"><span class="rname">no-nested-component</span><span class="rdesc">Disallows defining a component inside another component's body.</span><span class="rmeta"><span class="cat-chip">React Patterns</span></span></li>
+        <li class="rule-row" data-cat="react" data-fix="true"><span class="rname">no-unnecessary-curly-in-props</span><span class="rdesc">Warns on curly braces wrapping a string literal in a JSX prop.</span><span class="rmeta"><span class="cat-chip">React Patterns</span><span class="fix-chip">Autofix</span></span></li>
+        <li class="rule-row" data-cat="react"><span class="rname">no-unnecessary-fragment</span><span class="rdesc">Warns when a React fragment wraps a single child or isn't needed for grouping.</span><span class="rmeta"><span class="cat-chip">React Patterns</span></span></li>
+        <li class="rule-row" data-cat="react"><span class="rname">no-unstable-default-props</span><span class="rdesc">Disallows object/array/function literal defaults in component or hook parameters.</span><span class="rmeta"><span class="cat-chip">React Patterns</span></span></li>
+
+        <li class="rule-row" data-cat="naming"><span class="rname">enforce-boolean-prop-naming</span><span class="rdesc">Requires boolean props to start with is, has, should, can, will, or did.</span><span class="rmeta"><span class="cat-chip">Naming</span></span></li>
+        <li class="rule-row" data-cat="naming" data-fix="true"><span class="rname">enforce-css-module-import-name</span><span class="rdesc">Enforces one consistent local name (default styles) for CSS Module imports.</span><span class="rmeta"><span class="cat-chip">Naming</span><span class="fix-chip">Autofix</span></span></li>
+        <li class="rule-row" data-cat="naming"><span class="rname">enforce-interface-type-naming</span><span class="rdesc">Interfaces start with I or end with Props; types start with T or end with Props.</span><span class="rmeta"><span class="cat-chip">Naming</span></span></li>
+        <li class="rule-row" data-cat="naming"><span class="rname">top-level-const-snake</span><span class="rdesc">Requires top-level const names in .tsx files to be ALL_CAPS.</span><span class="rmeta"><span class="cat-chip">Naming</span></span></li>
+
+        <li class="rule-row" data-cat="typescript"><span class="rname">enforce-enum-member-naming</span><span class="rdesc">Enforces PascalCase or UPPER_SNAKE_CASE for enum members.</span><span class="rmeta"><span class="cat-chip">TypeScript</span></span></li>
+        <li class="rule-row" data-cat="typescript" data-fix="true"><span class="rname">interface-type-required-first</span><span class="rdesc">Requires required fields before optional fields in interfaces and type literals.</span><span class="rmeta"><span class="cat-chip">TypeScript</span><span class="fix-chip">Autofix</span></span></li>
+
+        <li class="rule-row" data-cat="import-export"><span class="rname">enforce-alias-import-paths</span><span class="rdesc">Flags deep ../../ relative imports in favor of configured alias prefixes.</span><span class="rmeta"><span class="cat-chip">Imports &amp; Exports</span></span></li>
+        <li class="rule-row" data-cat="import-export"><span class="rname">no-default-export</span><span class="rdesc">Disallows default exports; enforces named exports only.</span><span class="rmeta"><span class="cat-chip">Imports &amp; Exports</span></span></li>
+
+        <li class="rule-row" data-cat="file-structure"><span class="rname">enforce-kebab-case-filenames</span><span class="rdesc">Enforces kebab-case file names for configured extensions.</span><span class="rmeta"><span class="cat-chip">File Structure</span></span></li>
+
+        <li class="rule-row" data-cat="documentation"><span class="rname">require-jsdoc-on-component</span><span class="rdesc">Warns if a root-level React component lacks a JSDoc comment.</span><span class="rmeta"><span class="cat-chip">Documentation</span></span></li>
+        <li class="rule-row" data-cat="documentation"><span class="rname">require-jsdoc-on-hook</span><span class="rdesc">Warns if a root-level custom hook lacks a JSDoc comment.</span><span class="rmeta"><span class="cat-chip">Documentation</span></span></li>
+        <li class="rule-row" data-cat="documentation"><span class="rname">require-jsdoc-on-root-function</span><span class="rdesc">Warns if a root-level plain function lacks a JSDoc comment.</span><span class="rmeta"><span class="cat-chip">Documentation</span></span></li>
+
+        <li class="rule-row" data-cat="testing" data-fix="true"><span class="rname">enforce-testid-naming</span><span class="rdesc">Enforces kebab-case values for data-testid (or a configured attribute).</span><span class="rmeta"><span class="cat-chip">Testing</span><span class="fix-chip">Autofix</span></span></li>
+      </ul>
       <p class="no-results" id="no-results" hidden>No rules match that search.</p>
     </div>
   </section>
@@ -582,13 +720,14 @@
           <span><span class="prompt">$</span> npm install --save-dev eslint-frontend-rules</span>
           <button class="copy" type="button" data-copy="npm install --save-dev eslint-frontend-rules">Copy</button>
         </div>
-        <p class="footer-meta">MIT licensed &middot; requires <code>eslint&gt;=9.0.0</code> &middot; maintained by Krishna Agarwal</p>
+        <p class="footer-meta">MIT licensed &middot; requires <code>eslint&gt;=9.0.0</code> &middot; maintained by <a href="https://krishnaagarwal.me" rel="author">Krishna Agarwal</a></p>
       </div>
       <nav class="footer-links">
         <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules">GitHub</a>
         <a href="https://www.npmjs.com/package/eslint-frontend-rules">npm</a>
         <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules/issues">Issues</a>
         <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme">Full README</a>
+        <a href="https://krishnaagarwal.me" rel="author">krishnaagarwal.me</a>
       </nav>
     </div>
   </div>
@@ -598,106 +737,37 @@
 (function () {
   "use strict";
 
-  var RULES = [
-    { name: "enforce-typography-components", cat: "design", desc: "Enforces Typography components over raw <p>, <span>, <h1>–<h6>, <blockquote> tags.", fix: false },
-    { name: "no-direct-colors", cat: "design", desc: "Disallows hex, rgb(a), hsl(a), and named colors in style props and classNames.", fix: false },
-    { name: "no-direct-colors-in-svg-attrs", cat: "design", desc: "Extends the color rule to SVG fill, stroke, stopColor, and flood/lighting-color attributes.", fix: false },
-
-    { name: "enforce-icon-button-aria-label", cat: "accessibility", desc: "Requires an accessible name (aria-label, aria-labelledby, or title) on icon-only buttons.", fix: false },
-    { name: "no-focusable-non-interactive-elements", cat: "accessibility", desc: "Flags non-interactive elements with onClick but no role or onKeyDown.", fix: false },
-    { name: "no-img-missing-alt", cat: "accessibility", desc: "Requires an alt attribute on raw <img> elements — empty alt is fine, missing isn't.", fix: false },
-
-    { name: "enforce-classname-utility", cat: "react", desc: "Warns when className is built from a template string instead of a class-merging utility like cn.", fix: false },
-    { name: "enforce-event-handler-naming", cat: "react", desc: "Requires on* prop names and handle* local function names for event handlers.", fix: true },
-    { name: "enforce-no-empty-classname-utility", cat: "react", desc: "Disallows empty or whitespace-only className attributes.", fix: false },
-    { name: "enforce-use-state-naming", cat: "react", desc: "Requires the [value, setValue] naming convention for useState destructuring.", fix: true },
-    { name: "no-inline-arrow-functions-in-jsx", cat: "react", desc: "Warns on inline arrow functions passed as JSX props.", fix: false },
-    { name: "no-nested-component", cat: "react", desc: "Disallows defining a component inside another component's body.", fix: false },
-    { name: "no-unnecessary-curly-in-props", cat: "react", desc: "Warns on curly braces wrapping a string literal in a JSX prop.", fix: true },
-    { name: "no-unnecessary-fragment", cat: "react", desc: "Warns when a React fragment wraps a single child or isn't needed for grouping.", fix: false },
-    { name: "no-unstable-default-props", cat: "react", desc: "Disallows object/array/function literal defaults in component or hook parameters.", fix: false },
-
-    { name: "enforce-boolean-prop-naming", cat: "naming", desc: "Requires boolean props to start with is, has, should, can, will, or did.", fix: false },
-    { name: "enforce-css-module-import-name", cat: "naming", desc: "Enforces one consistent local name (default styles) for CSS Module imports.", fix: true },
-    { name: "enforce-interface-type-naming", cat: "naming", desc: "Interfaces start with I or end with Props; types start with T or end with Props.", fix: false },
-    { name: "top-level-const-snake", cat: "naming", desc: "Requires top-level const names in .tsx files to be ALL_CAPS.", fix: false },
-
-    { name: "enforce-enum-member-naming", cat: "typescript", desc: "Enforces PascalCase or UPPER_SNAKE_CASE for enum members.", fix: false },
-    { name: "interface-type-required-first", cat: "typescript", desc: "Requires required fields before optional fields in interfaces and type literals.", fix: true },
-
-    { name: "enforce-alias-import-paths", cat: "import-export", desc: "Flags deep ../../ relative imports in favor of configured alias prefixes.", fix: false },
-    { name: "no-default-export", cat: "import-export", desc: "Disallows default exports; enforces named exports only.", fix: false },
-
-    { name: "enforce-kebab-case-filenames", cat: "file-structure", desc: "Enforces kebab-case file names for configured extensions.", fix: false },
-
-    { name: "require-jsdoc-on-component", cat: "documentation", desc: "Warns if a root-level React component lacks a JSDoc comment.", fix: false },
-    { name: "require-jsdoc-on-hook", cat: "documentation", desc: "Warns if a root-level custom hook lacks a JSDoc comment.", fix: false },
-    { name: "require-jsdoc-on-root-function", cat: "documentation", desc: "Warns if a root-level plain function lacks a JSDoc comment.", fix: false },
-
-    { name: "enforce-testid-naming", cat: "testing", desc: "Enforces kebab-case values for data-testid (or a configured attribute).", fix: true }
-  ];
-
-  var CAT_LABELS = {
-    design: "Design & Color",
-    accessibility: "Accessibility",
-    react: "React Patterns",
-    naming: "Naming",
-    typescript: "TypeScript",
-    "import-export": "Imports & Exports",
-    "file-structure": "File Structure",
-    documentation: "Documentation",
-    testing: "Testing"
-  };
-
-  var counts = { all: RULES.length };
-  RULES.forEach(function (r) { counts[r.cat] = (counts[r.cat] || 0) + 1; });
-
   var filterBar = document.getElementById("filter-bar");
-  var order = ["all", "design", "accessibility", "react", "naming", "typescript", "import-export", "file-structure", "documentation", "testing"];
+  var listEl = document.getElementById("rule-list");
+  var rows = Array.prototype.slice.call(listEl.querySelectorAll(".rule-row"));
+  var noResults = document.getElementById("no-results");
+  var searchEl = document.getElementById("rule-search");
   var activeCat = "all";
 
-  order.forEach(function (cat) {
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = (cat === "all" ? "All" : CAT_LABELS[cat]) + " (" + counts[cat] + ")";
-    btn.dataset.cat = cat;
-    if (cat === "all") btn.classList.add("is-active");
+  Array.prototype.forEach.call(filterBar.querySelectorAll("button"), function (btn) {
     btn.addEventListener("click", function () {
-      activeCat = cat;
+      activeCat = btn.dataset.cat;
       Array.prototype.forEach.call(filterBar.children, function (b) {
         b.classList.toggle("is-active", b === btn);
       });
       render();
     });
-    filterBar.appendChild(btn);
   });
-
-  var listEl = document.getElementById("rule-list");
-  var noResults = document.getElementById("no-results");
-  var searchEl = document.getElementById("rule-search");
 
   function render() {
     var q = searchEl.value.trim().toLowerCase();
-    var items = RULES.filter(function (r) {
-      var matchesCat = activeCat === "all" || r.cat === activeCat;
-      var matchesQ = !q || r.name.toLowerCase().indexOf(q) !== -1 || r.desc.toLowerCase().indexOf(q) !== -1;
-      return matchesCat && matchesQ;
+    var visibleCount = 0;
+    rows.forEach(function (row) {
+      var matchesCat = activeCat === "all" || row.dataset.cat === activeCat;
+      var text = row.textContent.toLowerCase();
+      var matchesQ = !q || text.indexOf(q) !== -1;
+      var show = matchesCat && matchesQ;
+      row.hidden = !show;
+      if (show) visibleCount++;
     });
-    listEl.innerHTML = "";
-    items.forEach(function (r) {
-      var li = document.createElement("li");
-      li.className = "rule-row";
-      li.innerHTML =
-        '<span class="rname">' + r.name + "</span>" +
-        '<span class="rdesc">' + r.desc + "</span>" +
-        '<span class="rmeta"><span class="cat-chip">' + CAT_LABELS[r.cat] + "</span>" +
-        (r.fix ? '<span class="fix-chip">Autofix</span>' : "") + "</span>";
-      listEl.appendChild(li);
-    });
-    noResults.hidden = items.length !== 0;
+    noResults.hidden = visibleCount !== 0;
   }
   searchEl.addEventListener("input", render);
-  render();
 
   var btnBefore = document.getElementById("btn-before");
   var btnAfter = document.getElementById("btn-after");
@@ -743,6 +813,59 @@
         done();
       }
     });
+  });
+
+  function formatCount(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 1) + "m";
+    if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
+    return String(n);
+  }
+
+  function withCache(key, ttlMs, fetcher, onValue) {
+    var cached = null;
+    try { cached = JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { cached = null; }
+    if (cached && Date.now() - cached.t < ttlMs) {
+      onValue(cached.v);
+      return;
+    }
+    if (cached) onValue(cached.v);
+    fetcher().then(function (v) {
+      if (v === undefined || v === null) return;
+      onValue(v);
+      try { localStorage.setItem(key, JSON.stringify({ v: v, t: Date.now() })); } catch (e) {}
+    }).catch(function () {});
+  }
+
+  var CACHE_TTL = 60 * 60 * 1000;
+
+  withCache("efr:stars", CACHE_TTL, function () {
+    return fetch("https://api.github.com/repos/krishnaagarwal1506/eslint-frontend-rules")
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { return data && typeof data.stargazers_count === "number" ? data.stargazers_count : null; });
+  }, function (stars) {
+    var label = formatCount(stars);
+    var starCount = document.getElementById("star-count");
+    var statStars = document.getElementById("stat-stars");
+    if (starCount) starCount.textContent = label;
+    if (statStars) statStars.textContent = label;
+  });
+
+  withCache("efr:version", CACHE_TTL, function () {
+    return fetch("https://registry.npmjs.org/eslint-frontend-rules/latest")
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { return data && data.version ? data.version : null; });
+  }, function (version) {
+    var el = document.getElementById("version-pill");
+    if (el) el.textContent = "v" + version;
+  });
+
+  withCache("efr:downloads", CACHE_TTL, function () {
+    return fetch("https://api.npmjs.org/downloads/point/last-month/eslint-frontend-rules")
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { return data && typeof data.downloads === "number" ? data.downloads : null; });
+  }, function (downloads) {
+    var el = document.getElementById("stat-downloads");
+    if (el) el.textContent = formatCount(downloads);
   });
 })();
 </script>

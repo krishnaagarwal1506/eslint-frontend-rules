@@ -1,0 +1,82 @@
+# eslint-frontend-rules
+
+> An ESLint plugin for frontend teams: 28 rules enforcing consistent naming, design, accessibility, and code quality in React and TypeScript codebases. Six rules ship with autofix. Requires ESLint >= 9 (flat config).
+
+eslint-frontend-rules catches the frontend inconsistencies static analysis usually misses and code reviewers usually end up typing the same comment about: raw HTML tags instead of Typography components, hardcoded hex/rgb/hsl colors instead of design tokens, unstable default props that break memoization, missing alt text, icon-only buttons with no accessible name, deep relative imports instead of aliases, default exports, and inconsistent naming for booleans, enums, hooks, filenames, and CSS Module imports.
+
+## Install
+
+```
+npm install --save-dev eslint-frontend-rules
+```
+
+```js
+// eslint.config.js
+import frontendRules from "eslint-frontend-rules";
+
+export default {
+  extends: [frontendRules.configs.recommended],
+  plugins: {
+    "eslint-frontend-rules": frontendRules,
+  },
+  rules: {
+    // Optionally override rule levels or options here
+  },
+};
+```
+
+## Rules by category
+
+### Design & Color
+- enforce-typography-components: Enforces Typography components over raw <p>, <span>, <h1>-<h6>, <blockquote> tags.
+- no-direct-colors: Disallows hex, rgb(a), hsl(a), and named colors in style props and classNames.
+- no-direct-colors-in-svg-attrs: Extends the color rule to SVG fill, stroke, stopColor, and flood/lighting-color attributes.
+
+### Accessibility
+- enforce-icon-button-aria-label: Requires an accessible name (aria-label, aria-labelledby, or title) on icon-only buttons.
+- no-focusable-non-interactive-elements: Flags non-interactive elements with onClick but no role or onKeyDown.
+- no-img-missing-alt: Requires an alt attribute on raw <img> elements (empty alt is allowed; missing is not).
+
+### React Patterns
+- enforce-classname-utility: Warns when className is built from a template string instead of a class-merging utility like cn.
+- enforce-event-handler-naming: Requires on* prop names and handle* local function names for event handlers. Autofixable.
+- enforce-no-empty-classname-utility: Disallows empty or whitespace-only className attributes.
+- enforce-use-state-naming: Requires the [value, setValue] naming convention for useState destructuring. Autofixable.
+- no-inline-arrow-functions-in-jsx: Warns on inline arrow functions passed as JSX props.
+- no-nested-component: Disallows defining a component inside another component's body.
+- no-unnecessary-curly-in-props: Warns on curly braces wrapping a string literal in a JSX prop. Autofixable.
+- no-unnecessary-fragment: Warns when a React fragment wraps a single child or isn't needed for grouping.
+- no-unstable-default-props: Disallows object/array/function literal defaults in component or hook parameters.
+
+### Naming
+- enforce-boolean-prop-naming: Requires boolean props to start with is, has, should, can, will, or did.
+- enforce-css-module-import-name: Enforces one consistent local name (default "styles") for CSS Module imports. Autofixable.
+- enforce-interface-type-naming: Interfaces start with I or end with Props; types start with T or end with Props.
+- top-level-const-snake: Requires top-level const names in .tsx files to be ALL_CAPS.
+
+### TypeScript
+- enforce-enum-member-naming: Enforces PascalCase or UPPER_SNAKE_CASE for enum members.
+- interface-type-required-first: Requires required fields before optional fields in interfaces and type literals. Autofixable.
+
+### Imports & Exports
+- enforce-alias-import-paths: Flags deep ../../ relative imports in favor of configured alias prefixes.
+- no-default-export: Disallows default exports; enforces named exports only.
+
+### File Structure
+- enforce-kebab-case-filenames: Enforces kebab-case file names for configured extensions.
+
+### Documentation
+- require-jsdoc-on-component: Warns if a root-level React component lacks a JSDoc comment.
+- require-jsdoc-on-hook: Warns if a root-level custom hook lacks a JSDoc comment.
+- require-jsdoc-on-root-function: Warns if a root-level plain function lacks a JSDoc comment.
+
+### Testing
+- enforce-testid-naming: Enforces kebab-case values for data-testid (or a configured attribute). Autofixable.
+
+## Links
+- [Homepage](https://krishnaagarwal1506.github.io/eslint-frontend-rules/): Landing page with a live demo, install guide, and full rule reference.
+- [GitHub repository](https://github.com/krishnaagarwal1506/eslint-frontend-rules): Source code and issue tracker.
+- [npm package](https://www.npmjs.com/package/eslint-frontend-rules): Published package, versions, and download stats.
+- [README](https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme): Full documentation with per-rule options and examples.
+- [License](https://github.com/krishnaagarwal1506/eslint-frontend-rules/blob/main/LICENSE): MIT.
+- [Author](https://krishnaagarwal.me): Krishna Agarwal.

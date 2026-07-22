@@ -1,0 +1,48 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="n">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <clipPath id="canvas"><rect width="1200" height="630"/></clipPath>
+  </defs>
+
+  <rect width="1200" height="630" fill="#EDEEE6"/>
+
+  <!-- hairline frame -->
+  <rect x="1" y="1" width="1198" height="628" fill="none" stroke="#CDD1C2" stroke-width="2"/>
+
+  <!-- brand mark -->
+  <g transform="translate(64,58)">
+    <path d="M0 16.5 Q5 11.5 10 16.5 T20 16.5 T30 16.5" stroke="#B8342A" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M3 3h20M3 8h26" stroke="#1E2422" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+  <text x="102" y="82" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="24" font-weight="600" fill="#1E2422">eslint-frontend-rules</text>
+
+  <!-- eyebrow -->
+  <text x="64" y="188" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" letter-spacing="2.5" fill="#2A4B7C">AN ESLINT PLUGIN FOR REACT &amp; TYPESCRIPT TEAMS</text>
+
+  <!-- headline -->
+  <text x="60" y="270" font-family="Iowan Old Style, Palatino Linotype, Palatino, Georgia, serif" font-size="58" font-weight="600" fill="#1E2422">Stop leaving the same comment</text>
+  <text x="60" y="336" font-family="Iowan Old Style, Palatino Linotype, Palatino, Georgia, serif" font-size="58" font-weight="600" fill="#1E2422">on every pull request.</text>
+
+  <!-- sub -->
+  <text x="64" y="396" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#4B534E">28 lint rules for design, accessibility, naming &amp; React correctness &#8212; six with autofix.</text>
+
+  <!-- stat strip -->
+  <line x1="64" y1="452" x2="1136" y2="452" stroke="#CDD1C2" stroke-width="2"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" fill="#1E2422">
+    <text x="64" y="500" font-size="34" font-weight="700">28</text>
+    <text x="64" y="524" font-size="16" fill="#7A8078" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">lint rules</text>
+
+    <text x="240" y="500" font-size="34" font-weight="700">9</text>
+    <text x="240" y="524" font-size="16" fill="#7A8078" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">categories</text>
+
+    <text x="400" y="500" font-size="34" font-weight="700">6</text>
+    <text x="400" y="524" font-size="16" fill="#7A8078" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">autofixable</text>
+  </g>
+
+  <!-- terminal chip -->
+  <rect x="700" y="466" width="436" height="56" rx="8" fill="#1E2422"/>
+  <text x="724" y="500" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#F8F9F3"><tspan fill="#2E6B4A">$</tspan> npm install -D eslint-frontend-rules</text>
+</svg>
