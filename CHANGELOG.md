@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.2.0...eslint-frontend-rules-v4.3.0) (2026-07-22)
+
+
+### Features
+
+* add favicon and apple touch icon, enhance index.html metadata, and create sitemap ([a38672a](https://github.com/krishnaagarwal1506/eslint-frontend-rules/commit/a38672ab10e77802be8c6c5c63a1a4776c6d1b1f))
+
 ## [4.2.0](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.1.0...eslint-frontend-rules-v4.2.0) (2026-07-22)
 
 
