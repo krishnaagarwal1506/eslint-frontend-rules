@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>eslint-frontend-rules — an ESLint plugin for frontend teams</title>
+<meta name="description" content="An ESLint plugin that catches frontend inconsistencies: raw HTML instead of Typography components, hardcoded colors, unstable default props, missing alt text, and 24 more.">
+<style>
+  :root {
+    --paper: #EDEEE6;
+    --paper-raised: #F8F9F3;
+    --paper-sunken: #E2E4D8;
+    --ink: #1E2422;
+    --ink-soft: #4B534E;
+    --ink-faint: #7A8078;
+    --rule: #CDD1C2;
+    --accent: #2A4B7C;
+    --accent-soft: #DEE6F0;
+    --error: #B8342A;
+    --warn: #96681E;
+    --ok: #2E6B4A;
+    --badge-error-fg: #F8F1EE;
+    --badge-warn-fg: #FBF3E4;
+    --badge-ok-fg: #EEF6F0;
+    --shadow: 0 1px 2px rgba(30, 36, 34, 0.06), 0 8px 24px rgba(30, 36, 34, 0.06);
+    --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #151915;
+      --paper-raised: #1D221D;
+      --paper-sunken: #10130F;
+      --ink: #E7EAE2;
+      --ink-soft: #A6AC9E;
+      --ink-faint: #6E756A;
+      --rule: #333A31;
+      --accent: #8FADDA;
+      --accent-soft: #23324A;
+      --error: #E2695A;
+      --warn: #D6A94B;
+      --ok: #5CB584;
+      --badge-error-fg: #2B1310;
+      --badge-warn-fg: #2A2007;
+      --badge-ok-fg: #0E1F15;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #151915;
+    --paper-raised: #1D221D;
+    --paper-sunken: #10130F;
+    --ink: #E7EAE2;
+    --ink-soft: #A6AC9E;
+    --ink-faint: #6E756A;
+    --rule: #333A31;
+    --accent: #8FADDA;
+    --accent-soft: #23324A;
+    --error: #E2695A;
+    --warn: #D6A94B;
+    --ok: #5CB584;
+    --badge-error-fg: #2B1310;
+    --badge-warn-fg: #2A2007;
+    --badge-ok-fg: #0E1F15;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 28px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --paper: #EDEEE6;
+    --paper-raised: #F8F9F3;
+    --paper-sunken: #E2E4D8;
+    --ink: #1E2422;
+    --ink-soft: #4B534E;
+    --ink-faint: #7A8078;
+    --rule: #CDD1C2;
+    --accent: #2A4B7C;
+    --accent-soft: #DEE6F0;
+    --error: #B8342A;
+    --warn: #96681E;
+    --ok: #2E6B4A;
+    --badge-error-fg: #F8F1EE;
+    --badge-warn-fg: #FBF3E4;
+    --badge-ok-fg: #EEF6F0;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; }
+  code, .mono { font-family: var(--font-mono); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .prose { max-width: 65ch; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- header ---------- */
+  header.site {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 0;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--font-mono); font-weight: 600; font-size: 0.98rem;
+    color: var(--ink); text-decoration: none; white-space: nowrap;
+  }
+  .brand svg { flex-shrink: 0; }
+  .nav-links { display: none; gap: 22px; align-items: center; font-size: 0.92rem; }
+  .nav-links a { color: var(--ink-soft); text-decoration: none; }
+  .nav-links a:hover { color: var(--accent); }
+  @media (min-width: 760px) { .nav-links { display: flex; } }
+  .version-pill {
+    font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.02em;
+    background: var(--paper-sunken); color: var(--ink-soft);
+    padding: 3px 9px; border-radius: 20px; border: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 64px 0 40px; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before {
+    content: ""; display: inline-block; width: 22px; height: 1px; background: var(--accent);
+  }
+  h1.headline {
+    font-size: clamp(2.1rem, 5vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 15ch;
+  }
+  .sub {
+    margin: 22px 0 0; color: var(--ink-soft); font-size: 1.1rem;
+    max-width: 56ch; line-height: 1.65;
+  }
+  .sub code { background: var(--paper-sunken); padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.88em; color: var(--ink); }
+
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 32px; }
+  .term {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--ink); color: var(--paper-raised);
+    font-family: var(--font-mono); font-size: 0.92rem;
+    padding: 12px 8px 12px 16px; border-radius: 8px;
+    box-shadow: var(--shadow);
+  }
+  .term .prompt { color: var(--ok); opacity: 0.9; }
+  .term button.copy {
+    background: transparent; border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+    color: var(--paper-raised); font-family: var(--font-mono); font-size: 0.76rem;
+    padding: 5px 9px; border-radius: 5px; cursor: pointer; line-height: 1;
+  }
+  .term button.copy:hover { background: color-mix(in srgb, var(--paper) 12%, transparent); }
+  .ghost-link {
+    display: inline-flex; align-items: center; gap: 7px;
+    color: var(--ink); text-decoration: none; font-size: 0.94rem;
+    border-bottom: 1px solid var(--rule); padding-bottom: 2px;
+  }
+  .ghost-link:hover { border-color: var(--accent); color: var(--accent); }
+
+  .stat-strip {
+    display: flex; flex-wrap: wrap; gap: 28px 40px; margin-top: 44px;
+    padding-top: 24px; border-top: 1px solid var(--rule);
+  }
+  .stat b {
+    display: block; font-family: var(--font-mono); font-size: 1.5rem;
+    font-variant-numeric: tabular-nums; color: var(--ink);
+  }
+  .stat span { font-size: 0.82rem; color: var(--ink-faint); }
+
+  /* ---------- section scaffolding ---------- */
+  section { padding: 56px 0; border-top: 1px solid var(--rule); }
+  .section-head { margin-bottom: 36px; max-width: 60ch; }
+  .section-kicker {
+    font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px;
+  }
+  h2.section-title { font-size: clamp(1.5rem, 3vw, 2.05rem); }
+  .section-desc { color: var(--ink-soft); margin-top: 12px; font-size: 1rem; }
+
+  /* ---------- code demo ---------- */
+  .demo-card {
+    background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .demo-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 16px; border-bottom: 1px solid var(--rule);
+  }
+  .demo-file { font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-faint); }
+  .toggle-group { display: inline-flex; background: var(--paper-sunken); border-radius: 7px; padding: 3px; }
+  .toggle-group button {
+    font-family: var(--font-mono); font-size: 0.78rem; border: none; background: transparent;
+    color: var(--ink-soft); padding: 5px 12px; border-radius: 5px; cursor: pointer;
+  }
+  .toggle-group button[aria-pressed="true"] {
+    background: var(--paper-raised); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .demo-body { padding: 22px 20px; }
+  pre.code {
+    margin: 0; font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.75;
+    white-space: pre; overflow-x: auto; color: var(--ink);
+  }
+  pre.code .line { white-space: pre; }
+  .flag {
+    text-decoration: underline wavy var(--error); text-decoration-thickness: 1.4px;
+    text-underline-offset: 3px; position: relative;
+  }
+  .flag.warn { text-decoration-color: var(--warn); }
+  .mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 15px; height: 15px; border-radius: 50%; background: var(--error); color: var(--badge-error-fg);
+    font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; vertical-align: 3px;
+    margin: 0 1px;
+  }
+  .fixed-good { color: var(--ok); }
+  [hidden] { display: none !important; }
+
+  .diagnostics { list-style: none; margin: 0; padding: 16px 20px 20px; border-top: 1px solid var(--rule); }
+  .diagnostics li { display: flex; gap: 12px; padding: 8px 0; font-size: 0.9rem; align-items: baseline; }
+  .diagnostics li + li { border-top: 1px dashed var(--rule); }
+  .diag-num {
+    flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--error); color: var(--badge-error-fg);
+    font-family: var(--font-mono); font-size: 0.68rem; display: inline-flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+  }
+  .diag-rule { font-family: var(--font-mono); color: var(--ink); font-weight: 600; font-size: 0.86rem; }
+  .diag-msg { color: var(--ink-soft); }
+  .all-clear { display: flex; align-items: center; gap: 10px; padding: 14px 20px; color: var(--ok); font-size: 0.92rem; border-top: 1px solid var(--rule); }
+
+  /* ---------- why grid ---------- */
+  .why-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  @media (min-width: 700px) { .why-grid { grid-template-columns: 1fr 1fr; } }
+  .why-card { background: var(--paper-raised); padding: 26px 24px; }
+  .why-card h3 { font-size: 1.05rem; font-family: var(--font-body); font-weight: 700; margin-bottom: 8px; }
+  .why-card p { margin: 0; color: var(--ink-soft); font-size: 0.94rem; }
+  .why-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .tag {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint);
+    background: var(--paper-sunken); padding: 3px 8px; border-radius: 4px;
+  }
+
+  /* ---------- quick start ---------- */
+  .qs-grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  @media (min-width: 860px) { .qs-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .code-block {
+    background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 10px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .code-block .demo-bar { justify-content: flex-end; }
+  .code-block pre {
+    margin: 0; padding: 18px 20px; font-family: var(--font-mono); font-size: 0.84rem;
+    line-height: 1.7; overflow-x: auto; color: var(--ink);
+  }
+  .code-block pre .kw { color: var(--accent); }
+  .code-block pre .cm { color: var(--ink-faint); font-style: italic; }
+  .code-block pre .str { color: var(--ok); }
+
+  /* ---------- signature rules ---------- */
+  .diff-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 860px) { .diff-grid { grid-template-columns: repeat(3, 1fr); } }
+  .diff-card {
+    background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow);
+  }
+  .diff-card .rule-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.92rem; }
+  .autofix-badge {
+    display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono);
+    font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase;
+    background: var(--ok); color: var(--badge-ok-fg); padding: 2px 7px; border-radius: 4px; width: fit-content;
+  }
+  .diff-lines { font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.8; overflow-x: auto; }
+  .diff-lines .del, .diff-lines .add { display: block; padding: 1px 8px; white-space: pre; border-radius: 3px; }
+  .diff-lines .del { background: color-mix(in srgb, var(--error) 14%, transparent); color: var(--ink); }
+  .diff-lines .add { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ink); }
+  .diff-lines .del::before { content: "\2212  "; color: var(--error); }
+  .diff-lines .add::before { content: "+  "; color: var(--ok); }
+  .diff-why { font-size: 0.86rem; color: var(--ink-soft); margin: 0; }
+
+  /* ---------- rulebook ---------- */
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .filter-bar button {
+    font-family: var(--font-mono); font-size: 0.78rem; border: 1px solid var(--rule);
+    background: var(--paper-raised); color: var(--ink-soft); padding: 6px 12px; border-radius: 20px;
+    cursor: pointer;
+  }
+  .filter-bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-bar button.is-active { background: var(--accent); border-color: var(--accent); color: var(--paper-raised); }
+  .rule-search {
+    width: 100%; max-width: 320px; margin-bottom: 20px; padding: 9px 12px;
+    font-family: var(--font-body); font-size: 0.92rem; border: 1px solid var(--rule);
+    border-radius: 7px; background: var(--paper-raised); color: var(--ink);
+  }
+  .rule-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .rule-row {
+    display: grid; grid-template-columns: 1fr; gap: 4px 16px;
+    padding: 14px 0; border-bottom: 1px solid var(--rule);
+  }
+  @media (min-width: 700px) { .rule-row { grid-template-columns: 260px 1fr auto; align-items: start; } }
+  .rule-row .rname { font-family: var(--font-mono); font-weight: 600; font-size: 0.88rem; }
+  .rule-row .rdesc { color: var(--ink-soft); font-size: 0.92rem; }
+  .rule-row .rmeta { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+  .cat-chip {
+    font-family: var(--font-mono); font-size: 0.68rem; color: var(--ink-faint);
+    background: var(--paper-sunken); padding: 2px 7px; border-radius: 4px;
+  }
+  .fix-chip {
+    font-family: var(--font-mono); font-size: 0.68rem; color: var(--badge-ok-fg);
+    background: var(--ok); padding: 2px 7px; border-radius: 4px;
+  }
+  .no-results { padding: 24px 0; color: var(--ink-faint); font-size: 0.92rem; }
+
+  /* ---------- footer ---------- */
+  footer.site { padding: 44px 0 56px; border-top: 1px solid var(--rule); }
+  .footer-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 28px; }
+  .footer-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.9rem; }
+  .footer-links a { color: var(--ink-soft); text-decoration: none; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-meta { color: var(--ink-faint); font-size: 0.82rem; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav-row">
+    <a class="brand" href="#top">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M2 14.5 Q5 11.5 8 14.5 T14 14.5 T18 14.5" stroke="var(--error)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M4 6h9M4 9h12" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      eslint-frontend-rules
+    </a>
+    <nav class="nav-links">
+      <a href="#demo">See it work</a>
+      <a href="#quickstart">Install</a>
+      <a href="#rules">Rules</a>
+      <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules">GitHub</a>
+    </nav>
+    <span class="version-pill">v4.1.0</span>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" style="border-top:none;">
+    <div class="wrap">
+      <p class="eyebrow">An ESLint plugin for React &amp; TypeScript teams</p>
+      <h1 class="headline">Stop leaving the same comment on every pull request.</h1>
+      <p class="sub">
+        <code>eslint-frontend-rules</code> turns the review nitpicks — raw <code>&lt;p&gt;</code> tags,
+        hardcoded hex colors, unstable default props, missing alt text — into lint errors your team
+        catches before a human has to type them again. Twenty-eight rules, six with autofix, one plugin.
+      </p>
+      <div class="hero-actions">
+        <div class="term">
+          <span><span class="prompt">$</span> npm install --save-dev eslint-frontend-rules</span>
+          <button class="copy" type="button" data-copy="npm install --save-dev eslint-frontend-rules">Copy</button>
+        </div>
+        <a class="ghost-link" href="https://github.com/krishnaagarwal1506/eslint-frontend-rules">
+          View source on GitHub &#8594;
+        </a>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><b>28</b><span>lint rules</span></div>
+        <div class="stat"><b>9</b><span>categories covered</span></div>
+        <div class="stat"><b>6</b><span>ship with autofix</span></div>
+        <div class="stat"><b>0</b><span>runtime dependencies*</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-kicker">See it work</p>
+        <h2 class="section-title">One component, six review comments you'll never write again.</h2>
+        <p class="section-desc">This is what a single lint pass over one component actually flags — a deep import, a default export, a color literal, an unlabeled click handler, and a raw tag. Toggle to see the fix.</p>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-bar">
+          <span class="demo-file">card.tsx</span>
+          <div class="toggle-group" role="group" aria-label="Show flagged or fixed code">
+            <button type="button" id="btn-before" aria-pressed="true">Flagged</button>
+            <button type="button" id="btn-after" aria-pressed="false">Fixed</button>
+          </div>
+        </div>
+        <div class="demo-body">
+          <pre class="code" id="code-before"><span class="line">import Button from <span class="flag">'../../../components/button'</span><span class="mark">1</span>;</span>
+<span class="line">&#8203;</span>
+<span class="line"><span class="flag">export default</span><span class="mark">2</span> function Card({ items = <span class="flag">[]</span><span class="mark">3</span> }) {</span>
+<span class="line">  return (</span>
+<span class="line">    &lt;div style={{ color: <span class="flag">'#4285F4'</span><span class="mark">4</span> }} <span class="flag">onClick={onSelect}</span><span class="mark">5</span>&gt;</span>
+<span class="line">      <span class="flag">&lt;p&gt;</span><span class="mark">6</span>Total: {items.length}<span class="flag">&lt;/p&gt;</span></span>
+<span class="line">    &lt;/div&gt;</span>
+<span class="line">  );</span>
+<span class="line">}</span></pre>
+          <pre class="code" id="code-after" hidden><span class="line">import { Button } from '@/components/button';</span>
+<span class="line">&#8203;</span>
+<span class="line">const EMPTY_ITEMS: CardItem[] = [];</span>
+<span class="line">&#8203;</span>
+<span class="line">export function Card({ items = EMPTY_ITEMS }: CardProps) {</span>
+<span class="line">  return (</span>
+<span class="line">    &lt;div</span>
+<span class="line">      role="button"</span>
+<span class="line">      tabIndex={0}</span>
+<span class="line">      onClick={handleSelect}</span>
+<span class="line">      onKeyDown={handleSelectKeyDown}</span>
+<span class="line">      style={{ color: 'var(--accent)' }}</span>
+<span class="line">    &gt;</span>
+<span class="line">      &lt;TypographyP&gt;Total: {items.length}&lt;/TypographyP&gt;</span>
+<span class="line">    &lt;/div&gt;</span>
+<span class="line">  );</span>
+<span class="line">}</span></pre>
+        </div>
+        <ul class="diagnostics" id="diag-list">
+          <li><span class="diag-num">1</span><span><span class="diag-rule">enforce-alias-import-paths</span> &mdash; <span class="diag-msg">deep relative import; use an alias like <code>@/components/button</code>.</span></span></li>
+          <li><span class="diag-num">2</span><span><span class="diag-rule">no-default-export</span> &mdash; <span class="diag-msg">default export found; use a named export instead.</span></span></li>
+          <li><span class="diag-num">3</span><span><span class="diag-rule">no-unstable-default-props</span> &mdash; <span class="diag-msg">new array literal on every render; breaks memoization downstream.</span></span></li>
+          <li><span class="diag-num">4</span><span><span class="diag-rule">no-direct-colors</span> &mdash; <span class="diag-msg">direct color value; use a CSS variable or theme token.</span></span></li>
+          <li><span class="diag-num">5</span><span><span class="diag-rule">no-focusable-non-interactive-elements</span> &mdash; <span class="diag-msg">click handler on a non-interactive element with no <code>role</code> or <code>onKeyDown</code>.</span></span></li>
+          <li><span class="diag-num">6</span><span><span class="diag-rule">enforce-typography-components</span> &mdash; <span class="diag-msg">raw <code>&lt;p&gt;</code> tag; use a Typography component like <code>TypographyP</code>.</span></span></li>
+        </ul>
+        <div class="all-clear" id="all-clear" hidden>&#10003;&nbsp; No problems found.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-kicker">Why teams add it</p>
+        <h2 class="section-title">The consistency your style guide already asks for, enforced automatically.</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-card">
+          <h3>Design consistency</h3>
+          <p>Raw <code>&lt;p&gt;</code>/<code>&lt;span&gt;</code>/<code>&lt;h1&gt;</code>&ndash;<code>&lt;h6&gt;</code> tags and hardcoded hex/rgb/hsl colors get flagged in both JSX and SVG attributes, so Typography components and design tokens stay the only way in.</p>
+          <div class="why-tags"><span class="tag">design &middot; 3 rules</span></div>
+        </div>
+        <div class="why-card">
+          <h3>Accessibility by default</h3>
+          <p>Missing <code>alt</code> text, icon-only buttons with no accessible name, and click handlers on non-interactive elements are caught at lint time &mdash; not in a screen-reader audit three sprints later.</p>
+          <div class="why-tags"><span class="tag">accessibility &middot; 3 rules</span></div>
+        </div>
+        <div class="why-card">
+          <h3>React correctness</h3>
+          <p>Components nested inside components, unstable default props, unnecessary fragments and curlies &mdash; the patterns that quietly break memoization and re-render more than they should.</p>
+          <div class="why-tags"><span class="tag">react &middot; 9 rules</span></div>
+        </div>
+        <div class="why-card">
+          <h3>Naming, settled once</h3>
+          <p>Boolean props, enum members, hook names, filenames, and CSS Module import aliases all follow one convention &mdash; decided in config, not re-litigated in every review thread.</p>
+          <div class="why-tags"><span class="tag">naming &amp; typescript &middot; 6 rules</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="quickstart">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-kicker">Quick start</p>
+        <h2 class="section-title">Install it, extend the recommended config, done.</h2>
+      </div>
+      <div class="qs-grid">
+        <div>
+          <p class="prose" style="color:var(--ink-soft);">
+            Requires ESLint 9 or newer (flat config). Install as a dev dependency, add it to
+            <code>eslint.config.js</code>, and every rule in the recommended set turns on immediately &mdash;
+            override any individual rule's level or options underneath.
+          </p>
+          <div class="term" style="margin-top:18px; display:inline-flex;">
+            <span><span class="prompt">$</span> npm install --save-dev eslint-frontend-rules</span>
+            <button class="copy" type="button" data-copy="npm install --save-dev eslint-frontend-rules">Copy</button>
+          </div>
+        </div>
+        <div class="code-block">
+          <div class="demo-bar"><span class="demo-file">eslint.config.js</span>
+            <button class="copy" type="button" style="font-family:var(--font-mono);font-size:0.76rem;background:var(--paper-sunken);border:1px solid var(--rule);border-radius:5px;padding:4px 9px;cursor:pointer;color:var(--ink-soft);" data-copy-target="config-snippet">Copy</button>
+          </div>
+          <pre id="config-snippet"><span class="kw">import</span> frontendRules <span class="kw">from</span> <span class="str">"eslint-frontend-rules"</span>;
+
+<span class="kw">export default</span> {
+  extends: [frontendRules.configs.recommended],
+  plugins: {
+    <span class="str">"eslint-frontend-rules"</span>: frontendRules,
+  },
+  rules: {
+    <span class="cm">// Optionally override rule levels or options here</span>
+  },
+};</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="signature">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-kicker">Autofix in action</p>
+        <h2 class="section-title">Six rules rewrite the code for you.</h2>
+        <p class="section-desc">Most naming and typing rules can't be autofixed safely &mdash; renaming a symbol without an AST-aware rename would break every call site. These can.</p>
+      </div>
+      <div class="diff-grid">
+        <div class="diff-card">
+          <span class="rule-name">enforce-use-state-naming</span>
+          <span class="autofix-badge">Autofix</span>
+          <div class="diff-lines">
+            <span class="del">const [name, updateName] = useState("");</span>
+            <span class="add">const [name, setName] = useState("");</span>
+          </div>
+          <p class="diff-why">Every setter reads as <code>[value, setValue]</code> &mdash; the fix renames the binding and every reference to it in scope.</p>
+        </div>
+        <div class="diff-card">
+          <span class="rule-name">enforce-css-module-import-name</span>
+          <span class="autofix-badge">Autofix</span>
+          <div class="diff-lines">
+            <span class="del">import css from './card.module.css';</span>
+            <span class="add">import styles from './card.module.css';</span>
+          </div>
+          <p class="diff-why">One local name for CSS Module imports across the whole codebase &mdash; grep for <code>styles.</code> and mean it.</p>
+        </div>
+        <div class="diff-card">
+          <span class="rule-name">interface-type-required-first</span>
+          <span class="autofix-badge">Autofix</span>
+          <div class="diff-lines">
+            <span class="del">interface Props { label?: string; id: string; }</span>
+            <span class="add">interface Props { id: string; label?: string; }</span>
+          </div>
+          <p class="diff-why">Required fields first, always &mdash; an interface reads like a function signature, not a grab bag.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="section-kicker">The rulebook</p>
+        <h2 class="section-title">All 28 rules, in one place.</h2>
+        <p class="section-desc">Every rule accepts an <code>ignore</code> option (glob patterns) to exempt files; several take their own additional options &mdash; see the README for the full list.</p>
+      </div>
+      <input class="rule-search" id="rule-search" type="search" placeholder="Search rules&hellip;" aria-label="Search rules">
+      <div class="filter-bar" id="filter-bar" role="group" aria-label="Filter by category"></div>
+      <ul class="rule-list" id="rule-list"></ul>
+      <p class="no-results" id="no-results" hidden>No rules match that search.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="term" style="display:inline-flex;">
+          <span><span class="prompt">$</span> npm install --save-dev eslint-frontend-rules</span>
+          <button class="copy" type="button" data-copy="npm install --save-dev eslint-frontend-rules">Copy</button>
+        </div>
+        <p class="footer-meta">MIT licensed &middot; requires <code>eslint&gt;=9.0.0</code> &middot; maintained by Krishna Agarwal</p>
+      </div>
+      <nav class="footer-links">
+        <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules">GitHub</a>
+        <a href="https://www.npmjs.com/package/eslint-frontend-rules">npm</a>
+        <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules/issues">Issues</a>
+        <a href="https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme">Full README</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var RULES = [
+    { name: "enforce-typography-components", cat: "design", desc: "Enforces Typography components over raw <p>, <span>, <h1>–<h6>, <blockquote> tags.", fix: false },
+    { name: "no-direct-colors", cat: "design", desc: "Disallows hex, rgb(a), hsl(a), and named colors in style props and classNames.", fix: false },
+    { name: "no-direct-colors-in-svg-attrs", cat: "design", desc: "Extends the color rule to SVG fill, stroke, stopColor, and flood/lighting-color attributes.", fix: false },
+
+    { name: "enforce-icon-button-aria-label", cat: "accessibility", desc: "Requires an accessible name (aria-label, aria-labelledby, or title) on icon-only buttons.", fix: false },
+    { name: "no-focusable-non-interactive-elements", cat: "accessibility", desc: "Flags non-interactive elements with onClick but no role or onKeyDown.", fix: false },
+    { name: "no-img-missing-alt", cat: "accessibility", desc: "Requires an alt attribute on raw <img> elements — empty alt is fine, missing isn't.", fix: false },
+
+    { name: "enforce-classname-utility", cat: "react", desc: "Warns when className is built from a template string instead of a class-merging utility like cn.", fix: false },
+    { name: "enforce-event-handler-naming", cat: "react", desc: "Requires on* prop names and handle* local function names for event handlers.", fix: true },
+    { name: "enforce-no-empty-classname-utility", cat: "react", desc: "Disallows empty or whitespace-only className attributes.", fix: false },
+    { name: "enforce-use-state-naming", cat: "react", desc: "Requires the [value, setValue] naming convention for useState destructuring.", fix: true },
+    { name: "no-inline-arrow-functions-in-jsx", cat: "react", desc: "Warns on inline arrow functions passed as JSX props.", fix: false },
+    { name: "no-nested-component", cat: "react", desc: "Disallows defining a component inside another component's body.", fix: false },
+    { name: "no-unnecessary-curly-in-props", cat: "react", desc: "Warns on curly braces wrapping a string literal in a JSX prop.", fix: true },
+    { name: "no-unnecessary-fragment", cat: "react", desc: "Warns when a React fragment wraps a single child or isn't needed for grouping.", fix: false },
+    { name: "no-unstable-default-props", cat: "react", desc: "Disallows object/array/function literal defaults in component or hook parameters.", fix: false },
+
+    { name: "enforce-boolean-prop-naming", cat: "naming", desc: "Requires boolean props to start with is, has, should, can, will, or did.", fix: false },
+    { name: "enforce-css-module-import-name", cat: "naming", desc: "Enforces one consistent local name (default styles) for CSS Module imports.", fix: true },
+    { name: "enforce-interface-type-naming", cat: "naming", desc: "Interfaces start with I or end with Props; types start with T or end with Props.", fix: false },
+    { name: "top-level-const-snake", cat: "naming", desc: "Requires top-level const names in .tsx files to be ALL_CAPS.", fix: false },
+
+    { name: "enforce-enum-member-naming", cat: "typescript", desc: "Enforces PascalCase or UPPER_SNAKE_CASE for enum members.", fix: false },
+    { name: "interface-type-required-first", cat: "typescript", desc: "Requires required fields before optional fields in interfaces and type literals.", fix: true },
+
+    { name: "enforce-alias-import-paths", cat: "import-export", desc: "Flags deep ../../ relative imports in favor of configured alias prefixes.", fix: false },
+    { name: "no-default-export", cat: "import-export", desc: "Disallows default exports; enforces named exports only.", fix: false },
+
+    { name: "enforce-kebab-case-filenames", cat: "file-structure", desc: "Enforces kebab-case file names for configured extensions.", fix: false },
+
+    { name: "require-jsdoc-on-component", cat: "documentation", desc: "Warns if a root-level React component lacks a JSDoc comment.", fix: false },
+    { name: "require-jsdoc-on-hook", cat: "documentation", desc: "Warns if a root-level custom hook lacks a JSDoc comment.", fix: false },
+    { name: "require-jsdoc-on-root-function", cat: "documentation", desc: "Warns if a root-level plain function lacks a JSDoc comment.", fix: false },
+
+    { name: "enforce-testid-naming", cat: "testing", desc: "Enforces kebab-case values for data-testid (or a configured attribute).", fix: true }
+  ];
+
+  var CAT_LABELS = {
+    design: "Design & Color",
+    accessibility: "Accessibility",
+    react: "React Patterns",
+    naming: "Naming",
+    typescript: "TypeScript",
+    "import-export": "Imports & Exports",
+    "file-structure": "File Structure",
+    documentation: "Documentation",
+    testing: "Testing"
+  };
+
+  var counts = { all: RULES.length };
+  RULES.forEach(function (r) { counts[r.cat] = (counts[r.cat] || 0) + 1; });
+
+  var filterBar = document.getElementById("filter-bar");
+  var order = ["all", "design", "accessibility", "react", "naming", "typescript", "import-export", "file-structure", "documentation", "testing"];
+  var activeCat = "all";
+
+  order.forEach(function (cat) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = (cat === "all" ? "All" : CAT_LABELS[cat]) + " (" + counts[cat] + ")";
+    btn.dataset.cat = cat;
+    if (cat === "all") btn.classList.add("is-active");
+    btn.addEventListener("click", function () {
+      activeCat = cat;
+      Array.prototype.forEach.call(filterBar.children, function (b) {
+        b.classList.toggle("is-active", b === btn);
+      });
+      render();
+    });
+    filterBar.appendChild(btn);
+  });
+
+  var listEl = document.getElementById("rule-list");
+  var noResults = document.getElementById("no-results");
+  var searchEl = document.getElementById("rule-search");
+
+  function render() {
+    var q = searchEl.value.trim().toLowerCase();
+    var items = RULES.filter(function (r) {
+      var matchesCat = activeCat === "all" || r.cat === activeCat;
+      var matchesQ = !q || r.name.toLowerCase().indexOf(q) !== -1 || r.desc.toLowerCase().indexOf(q) !== -1;
+      return matchesCat && matchesQ;
+    });
+    listEl.innerHTML = "";
+    items.forEach(function (r) {
+      var li = document.createElement("li");
+      li.className = "rule-row";
+      li.innerHTML =
+        '<span class="rname">' + r.name + "</span>" +
+        '<span class="rdesc">' + r.desc + "</span>" +
+        '<span class="rmeta"><span class="cat-chip">' + CAT_LABELS[r.cat] + "</span>" +
+        (r.fix ? '<span class="fix-chip">Autofix</span>' : "") + "</span>";
+      listEl.appendChild(li);
+    });
+    noResults.hidden = items.length !== 0;
+  }
+  searchEl.addEventListener("input", render);
+  render();
+
+  var btnBefore = document.getElementById("btn-before");
+  var btnAfter = document.getElementById("btn-after");
+  var codeBefore = document.getElementById("code-before");
+  var codeAfter = document.getElementById("code-after");
+  var diagList = document.getElementById("diag-list");
+  var allClear = document.getElementById("all-clear");
+
+  function showBefore() {
+    btnBefore.setAttribute("aria-pressed", "true");
+    btnAfter.setAttribute("aria-pressed", "false");
+    codeBefore.hidden = false;
+    codeAfter.hidden = true;
+    diagList.hidden = false;
+    allClear.hidden = true;
+  }
+  function showAfter() {
+    btnBefore.setAttribute("aria-pressed", "false");
+    btnAfter.setAttribute("aria-pressed", "true");
+    codeBefore.hidden = true;
+    codeAfter.hidden = false;
+    diagList.hidden = true;
+    allClear.hidden = false;
+  }
+  btnBefore.addEventListener("click", showBefore);
+  btnAfter.addEventListener("click", showAfter);
+
+  Array.prototype.forEach.call(document.querySelectorAll("button.copy"), function (btn) {
+    btn.addEventListener("click", function () {
+      var text = btn.dataset.copy;
+      if (!text && btn.dataset.copyTarget) {
+        var target = document.getElementById(btn.dataset.copyTarget);
+        text = target ? target.textContent : "";
+      }
+      var restore = btn.textContent;
+      var done = function () {
+        btn.textContent = "Copied";
+        setTimeout(function () { btn.textContent = restore; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, done);
+      } else {
+        done();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
