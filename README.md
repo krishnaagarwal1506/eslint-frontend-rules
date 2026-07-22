@@ -2,113 +2,6 @@
 
 Reusable ESLint plugin for frontend projects. Enforces code consistency, design standards, and best practices for React/TypeScript codebases.
 
-## 4.1.0
-
-Five new rules (all `"warn"` in `configs.recommended`, consistent with 4.0.0's
-"opt-in, not surprising" defaults):
-
-- **no-img-missing-alt** — require an `alt` attribute on raw `<img>` elements.
-  Only flags a *missing* attribute, never an empty one (`alt=""` is valid for
-  decorative images) — never pressures anyone into meaningless alt text.
-- **enforce-icon-button-aria-label** — require `aria-label`,
-  `aria-labelledby`, or `title` on a `<button>` whose only content is an icon
-  and no visible text.
-- **no-direct-colors-in-svg-attrs** — extends `no-direct-colors` to SVG
-  presentation attributes (`fill`, `stroke`, `stopColor`), which the original
-  rule doesn't check (it only looks at `style`/`className`). Keyword values
-  (`currentColor`, `none`, `transparent`) are never flagged.
-- **enforce-css-module-import-name** — CSS Module default imports
-  (`import X from './x.module.css'`) should use one consistent local name
-  (default `styles`) across the codebase. Fixable — renaming a default
-  import's local binding never changes what's actually imported, so this one
-  is safe to auto-fix (unlike the named-import case documented in 4.0.0).
-- **no-unstable-default-props** — flags `{ items = [] }`-style destructured
-  parameter defaults in components/hooks: an object/array/function literal
-  default is a *new* reference every call, silently breaking memoization and
-  any reference-equality check downstream.
-
-## 4.0.0
-
-A real-world adoption surfaced several autofixer bugs badly enough that `--fix`
-(which `lint-staged`/pre-commit hooks run regardless of a rule's severity)
-corrupted otherwise-working code. This release fixes those, tightens a few
-other fixers that could silently produce broken renames, and rebalances
-`configs.recommended` — previously almost everything was `"error"`, including
-rules that are either environment-incompatible (`no-default-export` errors on
-every Next.js page) or require setup most projects don't have yet
-(`enforce-typography-components`). Bumped as a major version because the
-`recommended` export's behavior changes materially.
-
-**Fixed:**
-
-- `no-focusable-non-interactive-elements`: the fixer inserted a *second*
-  `role` attribute on an element that already had one (e.g. `role="dialog"`),
-  producing `react/jsx-no-duplicate-props`; and it string-sliced the
-  `onClick` handler's source assuming it was `{identifier}`, breaking anything
-  else (e.g. an inline arrow) into an invalid statement. Now checks for *any*
-  existing `role`. The generated `onKeyDown` also no longer re-invokes the
-  onClick expression directly (an intermediate fix that called it as `(e)`
-  unconditionally was itself a `TS2554` type error for any handler typed with
-  zero parameters — caught by running this against a real ~400-file
-  TypeScript codebase, not just synthetic snippets) — it now triggers
-  `e.currentTarget.click()`, letting React's own event system re-invoke the
-  actual onClick prop with no arity assumptions at all.
-- `no-unnecessary-fragment`: unwrapping `<>{child}</>` to bare `child` is only
-  valid when the fragment sits in direct JSX-children position. A fragment as
-  a `{cond && <>...</>}` operand (or similar) produced a parse error when
-  "fixed". Now only autofixes the provably-safe case; still reports (without
-  fixing) elsewhere.
-- `enforce-event-handler-naming`: the fixer could rename an *imported*
-  function used as a handler, which renames the import specifier itself and
-  breaks module resolution. Now only renames plain local declarations, and no
-  longer applies a blind fallback rename when the binding can't be resolved.
-- `enforce-interface-type-naming` / `enforce-boolean-prop-naming`: these
-  fixers renamed only the type declaration / property key, never any of its
-  usages (JSX props, destructured params, other type references) — a
-  guaranteed type error, not a cosmetic diff. Full-reference renaming for
-  type-level identifiers isn't reliably verifiable across
-  `@typescript-eslint/parser` versions, so these are now detection-only (no
-  `fixable`).
-- `interface-type-required-first`: reordering fields dropped any leading
-  JSDoc/comment attached to a reordered member (`sourceCode.getText(member)`
-  doesn't include it). Now re-attaches each member's leading comments.
-- `enforce-kebab-case-filenames`: split the filename on `/` only, so on
-  Windows (`context.filename` uses `\`) it checked the *entire absolute path*
-  as if it were the basename, misfiring on every file. Matches either
-  separator now.
-- `enforce-classname-utility`: the documented/schema'd `allow` option was
-  never actually read — every template-literal className was flagged
-  regardless. Now honored for template literals with no interpolation.
-- `enforce-alias-import-paths`: flagged *every* relative import, including
-  ordinary same-directory siblings (`./types`, the app's own `./globals.css`)
-  — idiomatic in most codebases, not just deep `../../../` staircases. Added
-  `allowSameDirectory` (default `true`) and `maxParentDepth` (default `1`) so
-  only genuinely deep relative paths are flagged by default.
-
-**`configs.recommended` changes** (rule → new default):
-`enforce-typography-components` error→off,
-`top-level-const-snake` error→off,
-`enforce-interface-type-naming` error→off,
-`no-default-export` error→off,
-`no-inline-arrow-functions-in-jsx` warn→off,
-`no-focusable-non-interactive-elements` error→warn,
-`enforce-kebab-case-filenames` error→warn,
-`interface-type-required-first` error→warn,
-`require-jsdoc-on-root-function`/`-component`/`-hook` warn→off (these now
-correctly fire on *exported* declarations — see below — which is a much
-larger surface than before, so start opt-in).
-Everything else is unchanged. Override any rule's level in your own `rules`
-block same as always.
-
-**Also fixed:** `require-jsdoc-on-root-function`, `require-jsdoc-on-component`,
-and `require-jsdoc-on-hook` share a root-level check that only matched
-`node.parent.type === "Program"` — but `export function Foo() {}` and
-`export const Foo = () => {}` have an `ExportNamedDeclaration`/
-`ExportDefaultDeclaration` parent, not `Program` directly. Since real
-components/hooks are almost always exported, these rules previously never
-fired on the case they exist for. Fixed (and the JSDoc-insertion fixer now
-inserts before `export`, not between `export` and the declaration keyword).
-
 ## Installation
 
 ```
@@ -481,7 +374,7 @@ rules: {
 <Component className="" /> // allowed by default
 
 ```
-### 17. no-empty-classname
+### 17. enforce-no-empty-classname-utility
 
 **Disallows empty or whitespace-only `className` attributes in JSX.**
 
@@ -631,6 +524,150 @@ function useThing({ options = {} } = {}) { /* ... */ }
 const EMPTY_ITEMS = [];
 function Card({ items = EMPTY_ITEMS }) { /* ... */ }
 function Card({ count = 0, label = 'untitled' }) { /* ... */ } // primitives are always fine
+```
+
+### 23. enforce-boolean-prop-naming
+
+**Enforces that boolean props in TypeScript interfaces/types start with `is`, `has`, `should`, `can`, `will`, or `did`.**
+
+- Checks `TSPropertySignature` members whose type is `boolean` (or a union
+  with `boolean`/`undefined`) in interfaces and type aliases. `.ts`/`.tsx`
+  files only.
+- **Not autofixable.** Renaming the key alone would leave every real usage
+  (destructured params, JSX prop names) pointing at the old name — a type
+  error, not a cosmetic diff. Rename with your editor's "Rename Symbol"
+  instead.
+- Options:
+  - `ignore` (array of glob patterns)
+  - `prefixes`: array of allowed prefixes (default `["is", "has", "should", "can", "will", "did"]`)
+
+**Example:**
+
+```ts
+// Warns:
+interface Props {
+  visible: boolean;
+}
+
+// OK:
+interface Props {
+  isVisible: boolean;
+}
+```
+
+### 24. interface-type-required-first
+
+**Requires all required fields to come before optional fields in TypeScript interfaces and type literals.**
+
+- `.ts`/`.tsx` files only.
+- **Autofixable** — reorders members (required first, then optional),
+  re-attaching each member's leading JSDoc/comments so documentation isn't
+  dropped during the reorder.
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```ts
+// Warns:
+interface Props {
+  label?: string;
+  id: string;
+}
+
+// OK:
+interface Props {
+  id: string;
+  label?: string;
+}
+```
+
+### 25. enforce-enum-member-naming
+
+**Enforces that TypeScript enum members use `PascalCase` or `UPPER_SNAKE_CASE`.**
+
+- `.ts`/`.tsx` files only.
+- No autofix.
+- Options:
+  - `convention`: `"PascalCase"`, `"UPPER_SNAKE_CASE"`, or `"both"` (default)
+  - `ignore` (array of glob patterns)
+
+**Example:**
+
+```ts
+// Warns (with default "both" convention):
+enum Status {
+  inProgress,
+}
+
+// OK:
+enum Status {
+  InProgress,
+}
+enum Status {
+  IN_PROGRESS,
+}
+```
+
+### 26. enforce-use-state-naming
+
+**Enforces that `useState` destructuring follows the `[value, setValue]` naming convention.**
+
+- Matches `const [x, y] = useState(...)` (including `React.useState`) where
+  both sides are simple identifiers.
+- **Autofixable** — renames the setter and every reference to it in scope.
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns and auto-fixes:
+const [name, updateName] = useState("");
+
+// OK:
+const [name, setName] = useState("");
+```
+
+### 27. enforce-event-handler-naming
+
+**Enforces `on*` naming for event-handler props and `handle*` naming for the local functions passed to them.**
+
+- Only checks JSX props matching `on[A-Z]...` whose value is a bare
+  identifier reference to a local function.
+- **Autofixable**, but only for plain local declarations — an imported
+  function used as a handler is left untouched (renaming it would rename the
+  import specifier and break module resolution), and a fallback rename isn't
+  attempted when the binding can't be resolved.
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns and auto-fixes:
+function onSave() {}
+<Form onSubmit={onSave} />;
+
+// OK:
+function handleSave() {}
+<Form onSubmit={handleSave} />;
+```
+
+### 28. enforce-testid-naming
+
+**Enforces kebab-case values for `data-testid` (or a configured attribute) in JSX.**
+
+- **Autofixable** — rewrites the value to kebab-case.
+- Options:
+  - `ignore` (array of glob patterns)
+  - `testIdAttribute` (default `"data-testid"`)
+
+**Example:**
+
+```jsx
+// Warns and auto-fixes:
+<button data-testid="submitButton" />
+
+// OK:
+<button data-testid="submit-button" />
 ```
 
 ## Example: Custom Rule Options
