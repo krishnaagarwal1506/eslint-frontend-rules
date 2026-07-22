@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.3.0...eslint-frontend-rules-v4.4.0) (2026-07-22)
+
+
+### Features
+
+* add Google site verification HTML file ([88c4b82](https://github.com/krishnaagarwal1506/eslint-frontend-rules/commit/88c4b82edabd9df958820767caba7e980ff8d63e))
+
 ## [4.3.0](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.2.0...eslint-frontend-rules-v4.3.0) (2026-07-22)
 
 
