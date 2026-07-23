@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.1](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.4.0...eslint-frontend-rules-v4.4.1) (2026-07-23)
+
+
+### Bug Fixes
+
+* update homepage URL in package.json ([ab9c0c1](https://github.com/krishnaagarwal1506/eslint-frontend-rules/commit/ab9c0c1827eb0b3246191c429ddb11ea1beeb345))
+
 ## [4.4.0](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.3.0...eslint-frontend-rules-v4.4.0) (2026-07-22)
 
 
