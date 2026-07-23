@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/krishnaagarwal1506/eslint-frontend-rules/issues"
   },
-  "homepage": "https://github.com/krishnaagarwal1506/eslint-frontend-rules#readme",
+  "homepage": "https://eslint-frontend-rules.measdev.me/",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
