@@ -670,6 +670,133 @@ function handleSave() {}
 <button data-testid="submit-button" />
 ```
 
+### 29. no-unstable-context-value
+
+**Disallows object/array literal values on a Context Provider's `value` prop.**
+
+- `<MyContext.Provider value={{ a, b }}>` creates a *new* object every
+  render, so every consumer re-renders regardless of memoization — the same
+  failure mode as `no-unstable-default-props`, applied to context.
+- Only matches the canonical `<X.Provider value={...}>` shape (a
+  `JSXMemberExpression` ending in `.Provider`) — a plain `<Provider>` (e.g.
+  react-redux's, which uses a `store` prop) is never flagged.
+- A `value` that's a variable, or a call to `useMemo`/`useCallback`, is
+  never flagged — those are already stable.
+- No autofix (hoisting vs. `useMemo` is a judgment call).
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+<MyContext.Provider value={{ user, theme }}>
+  <App />
+</MyContext.Provider>
+
+// OK:
+const value = useMemo(() => ({ user, theme }), [user, theme]);
+<MyContext.Provider value={value}>
+  <App />
+</MyContext.Provider>
+```
+
+### 30. no-async-effect-callback
+
+**Disallows an async function as the direct callback to `useEffect`/`useLayoutEffect`/`useInsertionEffect`.**
+
+- React expects the effect callback to return either nothing or a
+  synchronous cleanup function. An async function returns a Promise
+  instead — React ignores it, so a `return () => {...}` cleanup written
+  inside the async function is *never called*, and any rejection goes
+  unhandled.
+- No autofix (the fix is always the same shape — move the async logic into
+  its own function and call it — but naming/placement is a judgment call).
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+useEffect(async () => {
+  const data = await fetchData();
+  setData(data);
+}, []);
+
+// OK:
+useEffect(() => {
+  async function run() {
+    const data = await fetchData();
+    setData(data);
+  }
+  run();
+}, []);
+```
+
+### 31. no-inline-static-style-object
+
+**Disallows a fully-static object literal on JSX `style` — hoist it to a module-level constant.**
+
+- `style={{...}}` is React's only syntax for inline styles, so flagging
+  every occurrence would be noise — most read a prop, state, or theme value
+  and genuinely need to be built per render. This rule only flags the
+  subset where **every** value is a literal (no identifiers, member/call
+  expressions, or template interpolation): those have zero reason to be
+  recreated every render, so hoisting is a strict improvement with no
+  `useMemo`/dependency-array tradeoff to weigh.
+- No autofix (naming/placement of the hoisted constant is a judgment call,
+  same reasoning as `no-unstable-default-props`).
+- Options: `ignore` (array of glob patterns)
+
+**Example:**
+
+```jsx
+// Warns:
+<div style={{ color: "red", padding: 4 }} />
+
+// OK (hoisted):
+const ERROR_TEXT_STYLE = { color: "red", padding: 4 };
+<div style={ERROR_TEXT_STYLE} />
+
+// OK (genuinely dynamic, never flagged):
+<div style={{ color: props.color }} />
+<div style={{ width: `${pct}%` }} />
+```
+
+### 32. filename-matches-component-name
+
+**Requires a file's name to match the component it exports (e.g. `button.tsx` should export `Button`).**
+
+- Ties together `enforce-kebab-case-filenames` (format of the name) and
+  component naming — nothing else checks that the two actually agree, so a
+  file can drift out of sync (e.g. after a rename) without any rule
+  catching it.
+- Looks at top-level named/default exports: function/class components,
+  `const X = () => ...`, and common HOC wrapping (`memo(...)`,
+  `forwardRef(...)`, `styled.div\`...\``). A file with no exported
+  top-level component (utils, hooks, config) is never checked.
+- `index.tsx`/`index.jsx` (barrel/entry files) are always skipped.
+- If a file exports several components, it passes as long as *any* of
+  their names matches the filename.
+- No autofix (renaming either the file or the component is a project
+  decision this rule can't make).
+- Options:
+  - `ignore` (array of glob patterns)
+  - `extensions` (default `[".tsx", ".jsx"]`)
+
+**Example:**
+
+```jsx
+// card.tsx — Warns: exported component "Button" doesn't match "card"
+export function Button() {
+  return <button />;
+}
+
+// button.tsx — OK:
+export function Button() {
+  return <button />;
+}
+```
+
 ## Example: Custom Rule Options
 
 ```json
