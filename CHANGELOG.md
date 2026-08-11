@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.5.0](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.4.1...eslint-frontend-rules-v4.5.0) (2026-08-11)
+
+
+### Features
+
+* add 4 new rules for React perf bugs and file/component naming drift ([2bce664](https://github.com/krishnaagarwal1506/eslint-frontend-rules/commit/2bce664f1531d3e2395a9de611db1f9519881dd2))
+* add 4 new rules for React perf bugs and file/component naming drift ([8e4e4d5](https://github.com/krishnaagarwal1506/eslint-frontend-rules/commit/8e4e4d53f465d2bde64a146bca548d0a6e3cea3e))
+
 ## [4.4.1](https://github.com/krishnaagarwal1506/eslint-frontend-rules/compare/eslint-frontend-rules-v4.4.0...eslint-frontend-rules-v4.4.1) (2026-07-23)
 
 
